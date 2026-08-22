@@ -37,11 +37,11 @@ const FEATURES = [
     tag: "WP-01",
     icon: (
       <svg viewBox="0 0 40 40" fill="none" className="w-10 h-10" aria-hidden="true">
-        <circle cx="20" cy="20" r="18" stroke="#D9A441" strokeWidth="1.5" />
-        <path d="M12 28 Q20 10 28 28" stroke="#D9A441" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <circle cx="12" cy="28" r="2.5" fill="#D9A441" />
-        <circle cx="28" cy="28" r="2.5" fill="#D9A441" />
-        <circle cx="20" cy="16" r="2.5" fill="#D9A441" />
+        <circle cx="20" cy="20" r="18" stroke="#C4622D" strokeWidth="1.5" />
+        <path d="M12 28 Q20 10 28 28" stroke="#C4622D" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <circle cx="12" cy="28" r="2.5" fill="#C4622D" />
+        <circle cx="28" cy="28" r="2.5" fill="#C4622D" />
+        <circle cx="20" cy="16" r="2.5" fill="#C4622D" />
       </svg>
     ),
     title: "Sketch the route",
@@ -51,9 +51,9 @@ const FEATURES = [
     tag: "WP-02",
     icon: (
       <svg viewBox="0 0 40 40" fill="none" className="w-10 h-10" aria-hidden="true">
-        <circle cx="14" cy="14" r="7" stroke="#D9A441" strokeWidth="1.5" />
-        <circle cx="27" cy="14" r="7" stroke="#D9A441" strokeWidth="1.5" strokeDasharray="3 2" />
-        <path d="M14 23 Q20 32 27 23" stroke="#D9A441" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <circle cx="14" cy="14" r="7" stroke="#C4622D" strokeWidth="1.5" />
+        <circle cx="27" cy="14" r="7" stroke="#C4622D" strokeWidth="1.5" strokeDasharray="3 2" />
+        <path d="M14 23 Q20 32 27 23" stroke="#C4622D" strokeWidth="1.5" fill="none" strokeLinecap="round" />
       </svg>
     ),
     title: "Invite collaborators",
@@ -63,12 +63,12 @@ const FEATURES = [
     tag: "WP-03",
     icon: (
       <svg viewBox="0 0 40 40" fill="none" className="w-10 h-10" aria-hidden="true">
-        <rect x="8" y="10" width="24" height="22" rx="3" stroke="#D9A441" strokeWidth="1.5" />
-        <path d="M14 10V7M26 10V7" stroke="#D9A441" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M8 17h24" stroke="#D9A441" strokeWidth="1.2" />
-        <circle cx="15" cy="24" r="1.5" fill="#D9A441" />
-        <circle cx="20" cy="24" r="1.5" fill="#D9A441" />
-        <circle cx="25" cy="24" r="1.5" fill="#D9A441" />
+        <rect x="8" y="10" width="24" height="22" rx="3" stroke="#C4622D" strokeWidth="1.5" />
+        <path d="M14 10V7M26 10V7" stroke="#C4622D" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M8 17h24" stroke="#C4622D" strokeWidth="1.2" />
+        <circle cx="15" cy="24" r="1.5" fill="#C4622D" />
+        <circle cx="20" cy="24" r="1.5" fill="#C4622D" />
+        <circle cx="25" cy="24" r="1.5" fill="#C4622D" />
       </svg>
     ),
     title: "Fill in the stops",
@@ -124,12 +124,10 @@ export default function LandingPage() {
     <>
       {/* ── Keyframes & Grid pattern ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
         .gt-hero-grid {
           background-image:
-            linear-gradient(rgba(246,241,228,0.045) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(246,241,228,0.045) 1px, transparent 1px);
+            linear-gradient(rgba(31,42,36,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(31,42,36,0.04) 1px, transparent 1px);
           background-size: 48px 48px;
         }
 
@@ -159,10 +157,10 @@ export default function LandingPage() {
           animation: gt-float 4s ease-in-out infinite;
         }
 
-        .gt-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(217,164,65,0.35); }
+        .gt-cta-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
         .gt-cta-primary { transition: transform 0.25s ease, box-shadow 0.25s ease; }
 
-        .gt-feature-card:hover { transform: translateY(-4px); border-color: rgba(217,164,65,0.35); }
+        .gt-feature-card:hover { transform: translateY(-4px); border-color: var(--color-route); }
         .gt-feature-card { transition: transform 0.3s ease, border-color 0.3s ease; }
 
         @media (prefers-reduced-motion: reduce) {
@@ -177,18 +175,15 @@ export default function LandingPage() {
         }
       `}</style>
 
-      <div
-        style={{ backgroundColor: "#123138", color: "#F6F1E4", fontFamily: "'Inter', system-ui, sans-serif", minHeight: "100vh" }}
-      >
+      <div className="min-h-screen bg-bg text-ink font-body">
         {/* ── Nav bar ── */}
         <nav
-          style={{ borderBottom: "1px solid rgba(246,241,228,0.08)" }}
-          className="flex items-center justify-between px-6 md:px-12 py-4 sticky top-0 z-30"
+          className="flex items-center justify-between px-6 md:px-12 py-4 sticky top-0 z-30 bg-bg/95 backdrop-blur-sm border-b border-border"
           aria-label="Main navigation"
           role="navigation"
         >
           <span
-            style={{ fontFamily: "'Fraunces', Georgia, serif", color: "#D9A441", fontSize: "1.35rem", letterSpacing: "-0.02em" }}
+            className="font-display text-h2 text-route"
             aria-label="GlobeTrotter home"
           >
             GlobeTrotter
@@ -196,8 +191,7 @@ export default function LandingPage() {
           <Link
             to="/login"
             id="nav-login-link"
-            style={{ color: "#F6F1E4", fontFamily: "'Inter', system-ui, sans-serif", fontSize: "0.875rem", letterSpacing: "0.03em" }}
-            className="opacity-70 hover:opacity-100 transition-opacity duration-200 font-medium"
+            className="text-small text-horizon hover:underline font-medium"
           >
             Log in →
           </Link>
@@ -207,7 +201,7 @@ export default function LandingPage() {
             HERO SECTION
         ═══════════════════════════════════════ */}
         <section
-          className="gt-hero-grid relative overflow-hidden pt-20 pb-10 px-6 md:px-12 flex flex-col items-center text-center"
+          className="gt-hero-grid relative overflow-hidden pt-16 pb-10 px-6 md:px-12 flex flex-col items-center text-center"
           aria-labelledby="hero-heading"
           id="hero"
         >
@@ -221,7 +215,7 @@ export default function LandingPage() {
               transform: "translateX(-50%)",
               width: "700px",
               height: "700px",
-              background: "radial-gradient(circle, rgba(217,164,65,0.08) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(196,98,45,0.1) 0%, transparent 70%)",
               pointerEvents: "none",
             }}
           />
@@ -233,14 +227,14 @@ export default function LandingPage() {
               fontFamily: "'IBM Plex Mono', Menlo, monospace",
               fontSize: "0.72rem",
               letterSpacing: "0.12em",
-              color: "#D9A441",
-              border: "1px solid rgba(217,164,65,0.3)",
-              backgroundColor: "rgba(217,164,65,0.06)",
+              color: "#C4622D",
+              border: "1px solid rgba(196,98,45,0.3)",
+              backgroundColor: "rgba(196,98,45,0.06)",
               textTransform: "uppercase",
             }}
             aria-label="Product label"
           >
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#D9A441", display: "inline-block" }} aria-hidden="true" />
+            <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#C4622D", display: "inline-block" }} aria-hidden="true" />
             Collaborative Travel Planning
           </div>
 
@@ -250,21 +244,19 @@ export default function LandingPage() {
             className="gt-anim-hero gt-anim-hero-d2 max-w-3xl leading-tight mb-6"
             style={{
               fontFamily: "'Fraunces', Georgia, serif",
-              fontSize: "clamp(2.6rem, 6vw, 4.5rem)",
-              fontWeight: 700,
-              color: "#F6F1E4",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.1,
+              fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
+              fontWeight: 600,
+              color: "#1F2A24",
+              lineHeight: 1.15,
             }}
           >
             Your journey,{" "}
-            <span style={{ color: "#D9A441" }}>charted together.</span>
+            <span style={{ color: "#C4622D" }}>charted together.</span>
           </h1>
 
           {/* Subhead */}
           <p
-            className="gt-anim-hero gt-anim-hero-d3 max-w-xl mb-10 leading-relaxed"
-            style={{ fontSize: "1.1rem", color: "rgba(246,241,228,0.7)", lineHeight: 1.7 }}
+            className="gt-anim-hero gt-anim-hero-d3 max-w-xl mb-8 text-body text-muted leading-relaxed"
           >
             GlobeTrotter turns scattered ideas into a shared itinerary — one waypoint at a time.
           </p>
@@ -274,27 +266,23 @@ export default function LandingPage() {
             <Link
               to="/login"
               id="hero-cta-primary"
-              className="gt-cta-primary inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold"
+              className="gt-cta-primary inline-flex items-center gap-2 rounded-[6px] px-5 py-3 font-medium shadow-card"
               style={{
-                backgroundColor: "#D9A441",
-                color: "#123138",
-                fontFamily: "'Inter', system-ui, sans-serif",
-                fontSize: "0.95rem",
-                letterSpacing: "0.01em",
+                backgroundColor: "#C4622D",
+                color: "#FFFFFF",
               }}
               aria-label="Start planning your trip"
             >
               Start planning
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#123138" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
 
             <Link
               to="/login"
               id="hero-cta-secondary"
-              style={{ color: "rgba(246,241,228,0.65)", fontSize: "0.9rem" }}
-              className="hover:text-[#F6F1E4] transition-colors duration-200 underline underline-offset-4 decoration-[rgba(246,241,228,0.3)]"
+              className="text-small text-muted hover:text-horizon transition-colors duration-200 underline underline-offset-4 decoration-border"
               aria-label="Log in to your existing account"
             >
               Already have an account? Log in
@@ -318,7 +306,7 @@ export default function LandingPage() {
               {/* Subtle shadow beneath path */}
               <path
                 d={ROUTE_PATH}
-                stroke="rgba(217,164,65,0.12)"
+                    stroke="rgba(196,98,45,0.12)"
                 strokeWidth="12"
                 strokeLinecap="round"
                 fill="none"
@@ -328,7 +316,7 @@ export default function LandingPage() {
               <path
                 ref={pathRef}
                 d={ROUTE_PATH}
-                stroke="#D9A441"
+                stroke="#C4622D"
                 strokeWidth="2"
                 strokeLinecap="round"
                 fill="none"
@@ -353,21 +341,21 @@ export default function LandingPage() {
                     cy={wp.cy}
                     r="10"
                     fill="none"
-                    stroke="#D9A441"
+                    stroke="#C4622D"
                     strokeWidth="1"
                     className="gt-pulse-ring"
                     style={{ animationDelay: `${i * 0.3}s` }}
                   />
                   {/* Dot */}
-                  <circle cx={wp.cx} cy={wp.cy} r="5" fill="#D9A441" />
-                  <circle cx={wp.cx} cy={wp.cy} r="2.5" fill="#123138" />
+                  <circle cx={wp.cx} cy={wp.cy} r="5" fill="#C4622D" />
+                  <circle cx={wp.cx} cy={wp.cy} r="2.5" fill="#FBF7F0" />
 
                   {/* Coordinate label above */}
                   <text
                     x={wp.cx}
                     y={wp.cy - 18}
                     textAnchor="middle"
-                    fill="rgba(246,241,228,0.55)"
+                    fill="rgba(31,42,36,0.55)"
                     fontSize="8"
                     fontFamily="'IBM Plex Mono', Menlo, monospace"
                   >
@@ -379,7 +367,7 @@ export default function LandingPage() {
                     x={wp.cx}
                     y={wp.cy + 22}
                     textAnchor="middle"
-                    fill="rgba(246,241,228,0.8)"
+                    fill="rgba(31,42,36,0.8)"
                     fontSize="9"
                     fontFamily="'Inter', system-ui, sans-serif"
                     fontWeight="500"
@@ -396,7 +384,7 @@ export default function LandingPage() {
             style={{
               fontFamily: "'IBM Plex Mono', Menlo, monospace",
               fontSize: "0.7rem",
-              color: "rgba(246,241,228,0.35)",
+              color: "rgba(31,42,36,0.45)",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
             }}
@@ -413,7 +401,7 @@ export default function LandingPage() {
           aria-hidden="true"
           style={{
             height: "1px",
-            background: "linear-gradient(90deg, transparent, rgba(246,241,228,0.12) 30%, rgba(217,164,65,0.2) 50%, rgba(246,241,228,0.12) 70%, transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(31,42,36,0.12) 30%, rgba(196,98,45,0.25) 50%, rgba(31,42,36,0.12) 70%, transparent)",
             margin: "0 3rem",
           }}
         />
@@ -428,12 +416,12 @@ export default function LandingPage() {
         >
           {/* Section label */}
           <div className="flex items-center gap-3 mb-4" aria-hidden="true">
-            <div style={{ width: "32px", height: "1px", backgroundColor: "#D9A441" }} />
+              <div style={{ width: "32px", height: "1px", backgroundColor: "#C4622D" }} />
             <span
               style={{
                 fontFamily: "'IBM Plex Mono', Menlo, monospace",
                 fontSize: "0.72rem",
-                color: "#D9A441",
+                color: "#C4622D",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
               }}
@@ -450,8 +438,7 @@ export default function LandingPage() {
               fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
               fontWeight: 700,
               lineHeight: 1.2,
-              color: "#F6F1E4",
-              letterSpacing: "-0.02em",
+              color: "#1F2A24",
             }}
           >
             Three moves from idea to itinerary.
@@ -463,8 +450,9 @@ export default function LandingPage() {
                 key={f.tag}
                 className="gt-feature-card rounded-2xl p-8"
                 style={{
-                  backgroundColor: "rgba(246,241,228,0.03)",
-                  border: "1px solid rgba(246,241,228,0.09)",
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #E4DDD0",
+                  boxShadow: "var(--shadow-card)",
                 }}
               >
                 {/* Waypoint tag */}
@@ -473,10 +461,10 @@ export default function LandingPage() {
                     style={{
                       fontFamily: "'IBM Plex Mono', Menlo, monospace",
                       fontSize: "0.68rem",
-                      color: "#D9A441",
+                      color: "#C4622D",
                       letterSpacing: "0.12em",
                       textTransform: "uppercase",
-                      border: "1px solid rgba(217,164,65,0.35)",
+                      border: "1px solid rgba(196,98,45,0.35)",
                       borderRadius: "4px",
                       padding: "2px 8px",
                     }}
@@ -495,13 +483,13 @@ export default function LandingPage() {
                     fontFamily: "'Fraunces', Georgia, serif",
                     fontSize: "1.25rem",
                     fontWeight: 700,
-                    color: "#F6F1E4",
+                    color: "#1F2A24",
                     letterSpacing: "-0.01em",
                   }}
                 >
                   {f.title}
                 </h3>
-                <p style={{ fontSize: "0.9rem", color: "rgba(246,241,228,0.6)", lineHeight: 1.7 }}>
+                <p className="text-small text-muted" style={{ lineHeight: 1.7 }}>
                   {f.body}
                 </p>
               </article>
@@ -516,17 +504,17 @@ export default function LandingPage() {
           className="px-6 md:px-12 py-24"
           aria-labelledby="footer-cta-heading"
           id="footer-cta"
-          style={{ borderTop: "1px solid rgba(246,241,228,0.07)" }}
+          style={{ borderTop: "1px solid #E4DDD0" }}
         >
           <div className="max-w-2xl mx-auto text-center">
             {/* Subtle globe illustration */}
             <div className="mx-auto mb-8 w-16 h-16 flex items-center justify-center" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none" className="w-16 h-16">
-                <circle cx="32" cy="32" r="28" stroke="#D9A441" strokeWidth="1.2" strokeDasharray="4 3" />
-                <ellipse cx="32" cy="32" rx="14" ry="28" stroke="rgba(217,164,65,0.4)" strokeWidth="1" />
-                <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(217,164,65,0.3)" strokeWidth="1" />
-                <line x1="12" y1="18" x2="52" y2="18" stroke="rgba(217,164,65,0.2)" strokeWidth="0.8" />
-                <line x1="12" y1="46" x2="52" y2="46" stroke="rgba(217,164,65,0.2)" strokeWidth="0.8" />
+                <circle cx="32" cy="32" r="28" stroke="#C4622D" strokeWidth="1.2" strokeDasharray="4 3" />
+                <ellipse cx="32" cy="32" rx="14" ry="28" stroke="rgba(196,98,45,0.4)" strokeWidth="1" />
+                <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(196,98,45,0.3)" strokeWidth="1" />
+                <line x1="12" y1="18" x2="52" y2="18" stroke="rgba(196,98,45,0.2)" strokeWidth="0.8" />
+                <line x1="12" y1="46" x2="52" y2="46" stroke="rgba(196,98,45,0.2)" strokeWidth="0.8" />
               </svg>
             </div>
 
@@ -537,8 +525,7 @@ export default function LandingPage() {
                 fontFamily: "'Fraunces', Georgia, serif",
                 fontSize: "clamp(1.8rem, 4vw, 3rem)",
                 fontWeight: 700,
-                color: "#F6F1E4",
-                letterSpacing: "-0.025em",
+                color: "#1F2A24",
                 lineHeight: 1.15,
               }}
             >
@@ -547,7 +534,8 @@ export default function LandingPage() {
 
             <p
               className="mb-10"
-              style={{ fontSize: "1rem", color: "rgba(246,241,228,0.6)", lineHeight: 1.7 }}
+              className="text-body text-muted"
+              style={{ lineHeight: 1.7 }}
             >
               Join your crew and start plotting the route — no experience required.
             </p>
@@ -555,19 +543,16 @@ export default function LandingPage() {
             <Link
               to="/login"
               id="footer-cta-button"
-              className="gt-cta-primary inline-flex items-center gap-2 rounded-full px-10 py-4 font-semibold"
+              className="gt-cta-primary inline-flex items-center gap-2 rounded-[6px] px-5 py-3 font-medium shadow-card"
               style={{
-                backgroundColor: "#D9A441",
-                color: "#123138",
-                fontFamily: "'Inter', system-ui, sans-serif",
-                fontSize: "0.95rem",
-                letterSpacing: "0.01em",
+                backgroundColor: "#C4622D",
+                color: "#FFFFFF",
               }}
               aria-label="Continue to log in page"
             >
               Continue to log in
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#123138" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
           </div>
@@ -576,13 +561,13 @@ export default function LandingPage() {
         {/* ── Footer wordmark ── */}
         <footer
           className="text-center py-8 px-6"
-          style={{ borderTop: "1px solid rgba(246,241,228,0.06)" }}
+          style={{ borderTop: "1px solid #E4DDD0" }}
           role="contentinfo"
         >
           <span
             style={{
               fontFamily: "'Fraunces', Georgia, serif",
-              color: "rgba(217,164,65,0.5)",
+              color: "rgba(196,98,45,0.7)",
               fontSize: "1.1rem",
               letterSpacing: "-0.01em",
             }}
@@ -594,7 +579,7 @@ export default function LandingPage() {
             style={{
               fontFamily: "'IBM Plex Mono', Menlo, monospace",
               fontSize: "0.68rem",
-              color: "rgba(246,241,228,0.22)",
+              color: "rgba(31,42,36,0.45)",
               letterSpacing: "0.08em",
               marginTop: "8px",
               textTransform: "uppercase",
