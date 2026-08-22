@@ -199,18 +199,12 @@ export default function MyTrips() {
         <div className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
           <div className="bg-surface border border-border rounded-[16px] w-full max-w-[400px] p-[24px] shadow-2xl mx-[16px] animate-[fadeIn_0.2s_ease-out_forwards]">
-            <h3 className="font-['Fraunces'] text-[22px] font-semibold text-ink mb-[8px]">Trip Completed!</h3>
-            <p className="text-[14px] text-muted mb-[24px]">Do you want to upload some memories from <b className="text-ink">{completingTrip.name}</b>?</p>
-            
-            <div className="border-2 border-dashed border-border rounded-[12px] h-[120px] flex flex-col items-center justify-center bg-bg/50 cursor-pointer hover:border-route transition-colors mb-[24px]">
-               <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[24px] h-[24px] stroke-muted mb-[8px]"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-               <span className="text-[13px] font-medium text-muted">Click to upload photos (optional)</span>
-            </div>
+            <h3 className="font-['Fraunces'] text-[22px] font-semibold text-ink mb-[8px]">Complete Trip?</h3>
+            <p className="text-[14px] text-muted mb-[24px]">Are you sure you want to mark <b className="text-ink">{completingTrip.name}</b> as completed?</p>
 
             <div className="flex justify-end gap-[12px]">
               <button onClick={() => setCompletingTrip(null)} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] text-muted hover:text-ink">Cancel</button>
-              <button onClick={() => confirmCompletion(completingTrip)} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] bg-surface border border-border text-ink hover:bg-bg">Skip for now</button>
-              <button onClick={() => confirmCompletion(completingTrip)} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] bg-route text-white hover:opacity-90 shadow-sm">Upload & Finish</button>
+              <button onClick={() => confirmCompletion(completingTrip)} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] bg-route text-white hover:opacity-90 shadow-sm">Confirm & Complete</button>
             </div>
           </div>
         </div>
@@ -284,7 +278,15 @@ function TripRow({ status, trips, deleteTrip, onMarkCompleted, tearingTripId }) 
           </div>
         ) : (
           sortedTrips.map((trip, idx) => (
-            <BoardingPassCard key={trip.id} trip={trip} status={trip.computedStatus || status} delay={idx * 0.08} deleteTrip={deleteTrip} onMarkCompleted={onMarkCompleted} isTearing={tearingTripId === trip.id} />
+            <BoardingPassCard 
+              key={trip.id} 
+              trip={trip} 
+              status={trip.computedStatus || status} 
+              delay={idx * 0.08} 
+              deleteTrip={deleteTrip} 
+              onMarkCompleted={onMarkCompleted} 
+              isTearing={tearingTripId === trip.id} 
+            />
           ))
         )}
       </div>
@@ -292,7 +294,7 @@ function TripRow({ status, trips, deleteTrip, onMarkCompleted, tearingTripId }) 
   );
 }
 
-function BoardingPassCard({ trip, status, delay, deleteTrip, onMarkCompleted, isTearing }) {
+export function BoardingPassCard({ trip, status, delay, deleteTrip, onMarkCompleted, isTearing }) {
   const navigate = useNavigate();
   const stampColor = {
     ongoing: 'text-route border-route',
@@ -315,12 +317,17 @@ function BoardingPassCard({ trip, status, delay, deleteTrip, onMarkCompleted, is
 
   const flightCode = `${trip.name.substring(0,3).toUpperCase()}-${new Date(trip.start_date || new Date()).getFullYear().toString().substr(2)}`;
 
+  const handleCardClick = () => {
+    if (isTearing) return;
+    navigate(`/trips/${trip.id}/view`);
+  };
+
   return (
     <div 
-      onClick={() => !isTearing && navigate(`/trips/${trip.id}/view`)}
-      className={`relative flex cursor-pointer group shrink-0 outline-none w-[280px] md:w-[320px] snap-start h-full min-h-[120px] transition-transform duration-250 ${!isTearing ? 'hover:-translate-y-[2px] drop-shadow-sm hover:drop-shadow-md' : 'pointer-events-none'}`}
+      onClick={handleCardClick}
+      className={`relative flex cursor-pointer group shrink-0 outline-none ${status === 'completed' ? 'w-[196px] md:w-[236px]' : 'w-[280px] md:w-[320px]'} snap-start h-full min-h-[120px] transition-transform duration-250 ${!isTearing ? 'hover:-translate-y-[2px] drop-shadow-sm hover:drop-shadow-md' : 'pointer-events-none'}`}
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' && !isTearing) navigate(`/trips/${trip.id}/view`); }}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleCardClick(); }}
     >
       <style>{`
         @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
@@ -338,6 +345,11 @@ function BoardingPassCard({ trip, status, delay, deleteTrip, onMarkCompleted, is
          <div className="absolute top-[-8px] right-0 w-[8px] h-[16px] bg-bg rounded-l-full border-b border-l border-border z-10 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05)]"></div>
          {/* Bottom Cutout Left Half */}
          <div className="absolute bottom-[-8px] right-0 w-[8px] h-[16px] bg-bg rounded-l-full border-t border-l border-border z-10 shadow-[inset_2px_-2px_4px_rgba(0,0,0,0.05)]"></div>
+         
+         {/* Perforation line on the torn edge */}
+         {status === 'completed' && (
+           <div className="absolute top-[12px] bottom-[12px] right-[-1px] w-[2px]" style={{ backgroundImage: 'radial-gradient(circle, #2C3350 1px, transparent 1.5px)', backgroundSize: '2px 8px' }}></div>
+         )}
          
          {/* Stamp */}
          <div className={`absolute top-[14px] right-[10px] font-['IBM_Plex_Mono'] text-[9px] font-bold tracking-[1.5px] px-[8px] py-[3px] rounded-[3px] border-[1.5px] border-dashed rotate-[6deg] bg-transparent opacity-80 mix-blend-plus-lighter z-10 ${stampColor[status] || stampColor.upcoming}`}>
@@ -379,22 +391,24 @@ function BoardingPassCard({ trip, status, delay, deleteTrip, onMarkCompleted, is
       </div>
 
       {/* Right Stub */}
-      <div 
-        className={`relative w-[84px] bg-surface border border-border border-l-0 rounded-r-[14px] flex items-center justify-center ${isTearing ? 'animate-[tearUp_0.8s_ease-in_forwards]' : 'opacity-0 translate-y-[14px] animate-[cardIn_0.55s_cubic-bezier(0.2,0.8,0.2,1)_forwards]'}`} 
-        style={{ transformOrigin: 'top left', animationDelay: isTearing ? '0s' : `${0.1 + delay}s` }}
-      >
-         {/* Cutout Right Half */}
-         <div className="absolute top-[-8px] left-0 w-[8px] h-[16px] bg-bg rounded-r-full border-b border-r border-border z-10 shadow-[inset_-2px_2px_4px_rgba(0,0,0,0.05)]"></div>
-         {/* Bottom Cutout Right Half */}
-         <div className="absolute bottom-[-8px] left-0 w-[8px] h-[16px] bg-bg rounded-r-full border-t border-r border-border z-10 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.05)]"></div>
-         
-         {/* Perforation line */}
-         <div className="absolute top-[12px] bottom-[12px] left-[-1px] w-[2px]" style={{ backgroundImage: 'radial-gradient(circle, #2C3350 1px, transparent 1.5px)', backgroundSize: '2px 8px' }}></div>
+      {status !== 'completed' && (
+        <div 
+          className={`relative w-[84px] bg-surface border border-border border-l-0 rounded-r-[14px] flex items-center justify-center ${isTearing ? 'animate-[tearUp_0.8s_ease-in_forwards]' : 'opacity-0 translate-y-[14px] animate-[cardIn_0.55s_cubic-bezier(0.2,0.8,0.2,1)_forwards]'}`} 
+          style={{ transformOrigin: 'top left', animationDelay: isTearing ? '0s' : `${0.1 + delay}s` }}
+        >
+          {/* Cutout Right Half */}
+          <div className="absolute top-[-8px] left-0 w-[8px] h-[16px] bg-bg rounded-r-full border-b border-r border-border z-10 shadow-[inset_-2px_2px_4px_rgba(0,0,0,0.05)]"></div>
+          {/* Bottom Cutout Right Half */}
+          <div className="absolute bottom-[-8px] left-0 w-[8px] h-[16px] bg-bg rounded-r-full border-t border-r border-border z-10 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.05)]"></div>
+          
+          {/* Perforation line */}
+          <div className="absolute top-[12px] bottom-[12px] left-[-1px] w-[2px]" style={{ backgroundImage: 'radial-gradient(circle, #2C3350 1px, transparent 1.5px)', backgroundSize: '2px 8px' }}></div>
 
-         <div className="rotate-90 font-['IBM_Plex_Mono'] text-[13px] font-bold tracking-[3px] text-muted whitespace-nowrap opacity-50">
-            {flightCode}
-         </div>
-      </div>
+          <div className="rotate-90 font-['IBM_Plex_Mono'] text-[13px] font-bold tracking-[3px] text-muted whitespace-nowrap opacity-50">
+              {flightCode}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

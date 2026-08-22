@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useItinerary } from '../hooks/useItinerary';
+import { useItinerary, calculateGaps } from '../hooks/useItinerary';
+import ItineraryTimelineView from '../components/itinerary/ItineraryTimelineView';
+import { supabase } from '../lib/supabaseClient';
 
-function EditActivityModal({ activity, onClose, onSave }) {
+function ActivityDetailModal({ activity, onClose, onSave }) {
   const [cost, setCost] = useState(activity.cost || 0);
   const [time, setTime] = useState(activity.time || '');
 
@@ -15,65 +17,139 @@ function EditActivityModal({ activity, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50 flex items-center justify-center animate-[fadeIn_0.2s_ease-out_forwards]">
+    <div className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50 flex items-center justify-center animate-[fadeIn_0.2s_ease-out_forwards] p-[16px]">
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
-      <div className="bg-surface border border-border rounded-[16px] w-full max-w-[400px] p-[24px] shadow-2xl mx-[16px]">
-        <h3 className="font-['Fraunces'] text-[20px] font-semibold text-ink mb-[4px]">Edit Activity</h3>
-        <p className="text-[13px] text-muted mb-[24px]">{activity.title} ({activity.city_name})</p>
+      <div className="bg-surface border border-border rounded-[16px] w-full max-w-[500px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         
-        <div className="flex flex-col gap-[16px] mb-[24px]">
-          <div>
-            <label className="block text-[12px] font-medium text-muted mb-[6px] uppercase tracking-wide">Scheduled Time</label>
-            <input 
-              type="time" 
-              value={time} 
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full bg-bg border border-border rounded-[8px] px-[12px] py-[10px] text-[14px] text-ink focus:border-route outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-[12px] font-medium text-muted mb-[6px] uppercase tracking-wide">Expense ($)</label>
-            <input 
-              type="number" 
-              value={cost} 
-              onChange={(e) => setCost(e.target.value)}
-              className="w-full bg-bg border border-border rounded-[8px] px-[12px] py-[10px] text-[14px] text-ink focus:border-route outline-none"
-              placeholder="0.00"
-            />
-          </div>
+        {/* Header Image Area */}
+        <div className="h-[180px] bg-bg relative shrink-0">
+          {activity.image_url ? (
+             <img src={activity.image_url} alt={activity.title} className="w-full h-full object-cover" />
+          ) : (
+             <div className="w-full h-full flex items-center justify-center text-[48px]">
+               {activity.category === 'food' ? '🍔' : activity.category === 'sightseeing' ? '📸' : '📍'}
+             </div>
+          )}
+          <button onClick={onClose} className="absolute top-[16px] right-[16px] w-[32px] h-[32px] bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-colors">
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[16px] h-[16px] stroke-white"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
         </div>
 
-        <div className="flex justify-end gap-[12px]">
-          <button onClick={onClose} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] text-muted hover:text-ink">Cancel</button>
-          <button onClick={handleSave} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] bg-route text-white hover:opacity-90 shadow-sm">Save Changes</button>
+        {/* Content Body */}
+        <div className="p-[24px] overflow-y-auto flex-1">
+          <div className="mb-[24px]">
+            <h3 className="font-['Fraunces'] text-[24px] font-semibold text-ink leading-tight mb-[4px]">{activity.title}</h3>
+            <div className="flex items-center gap-[8px] text-[13px] text-muted">
+               <span className="capitalize">{activity.category}</span>
+               <span className="w-[4px] h-[4px] rounded-full bg-border"></span>
+               <span>{activity.city_name}</span>
+            </div>
+          </div>
+          
+          {activity.description && (
+            <p className="text-[14px] text-muted leading-relaxed mb-[24px]">
+              {activity.description}
+            </p>
+          )}
+          
+          <div className="flex flex-col gap-[16px] mb-[32px]">
+            <div>
+              <label className="block text-[12px] font-medium text-muted mb-[6px] uppercase tracking-wide">Scheduled Time</label>
+              <input 
+                type="time" 
+                value={time} 
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full bg-bg border border-border rounded-[8px] px-[12px] py-[10px] text-[14px] text-ink focus:border-route outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-muted mb-[6px] uppercase tracking-wide">Expense ($)</label>
+              <input 
+                type="number" 
+                value={cost} 
+                onChange={(e) => setCost(e.target.value)}
+                className="w-full bg-bg border border-border rounded-[8px] px-[12px] py-[10px] text-[14px] text-ink focus:border-route outline-none"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-[12px]">
+            <button onClick={onClose} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] text-muted hover:text-ink">Cancel</button>
+            <button onClick={handleSave} className="px-[16px] py-[8px] rounded-[8px] font-medium text-[13.5px] bg-route text-white hover:opacity-90 shadow-sm">Save Changes</button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function DropZone({ onDrop }) {
-  const [isOver, setIsOver] = useState(false);
+function AddActivityModal({ stop, dayDateStr, onClose, onAdd }) {
+  const [availableActivities, setAvailableActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchActivities() {
+      const { data } = await supabase
+        .from('activities')
+        .select('*')
+        .eq('city_id', stop.city_id);
+      setAvailableActivities(data || []);
+      setLoading(false);
+    }
+    fetchActivities();
+  }, [stop.city_id]);
+
   return (
-    <div
-      onDragOver={(e) => { e.preventDefault(); setIsOver(true); }}
-      onDragLeave={() => setIsOver(false)}
-      onDrop={(e) => { e.preventDefault(); setIsOver(false); onDrop(e); }}
-      className={`transition-all duration-200 w-full ${isOver ? 'h-[64px] border-2 border-dashed border-route bg-route/5 rounded-[12px] my-[8px]' : 'h-[16px] my-0'}`}
-    ></div>
+    <div className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50 flex items-center justify-center animate-[fadeIn_0.2s_ease-out_forwards] p-[16px]">
+      <div className="bg-surface border border-border rounded-[16px] w-full max-w-[500px] flex flex-col max-h-[80vh] shadow-2xl overflow-hidden">
+        <div className="p-[20px] border-b border-border flex justify-between items-center bg-bg shrink-0">
+          <h3 className="font-['Fraunces'] font-semibold text-[20px] text-ink">Add to {stop.city?.name}</h3>
+          <button onClick={onClose} className="w-[32px] h-[32px] rounded-full hover:bg-black/10 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" className="w-[16px] h-[16px] stroke-ink"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-[20px]">
+          {loading ? (
+             <div className="text-center text-muted py-[20px]">Loading activities...</div>
+          ) : (
+             <div className="flex flex-col gap-[12px]">
+               {availableActivities.length === 0 && <div className="text-center text-muted py-[20px]">No activities found for this city.</div>}
+               {availableActivities.map(act => (
+                 <div key={act.id} onClick={() => onAdd(act.id)} className="flex items-center gap-[12px] p-[12px] border border-border rounded-[12px] cursor-pointer hover:border-route transition-colors bg-bg">
+                   <div className="w-[48px] h-[48px] bg-surface rounded-[8px] overflow-hidden flex items-center justify-center border border-border shrink-0">
+                      {act.image_url ? (
+                        <img src={act.image_url} className="w-full h-full object-cover"/>
+                      ) : (
+                        <span className="text-[20px]">{act.category === 'food' ? '🍔' : act.category === 'sightseeing' ? '📸' : '📍'}</span>
+                      )}
+                   </div>
+                   <div className="flex-1">
+                     <div className="font-semibold text-[15px] text-ink mb-[2px]">{act.name}</div>
+                     <div className="text-[12px] text-muted capitalize">{act.category}</div>
+                   </div>
+                   <div className="text-right">
+                     <div className="font-['IBM_Plex_Mono'] font-medium text-[14px] text-route">${act.estimated_cost}</div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function ItineraryView() {
   const { tripId } = useParams();
   const navigate = useNavigate();
-  const { trip, tripStops, activities, loading, error, updateActivityDetails, reorderActivity } = useItinerary(tripId);
+  const { trip, tripStops, activities, loading, error, updateActivityDetails, reorderActivity, addActivityToStop } = useItinerary(tripId);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [groupBy, setGroupBy] = useState('day');
   const [sortBy, setSortBy] = useState('time_asc');
   const [filterType, setFilterType] = useState('all');
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'timeline'
   
   const [showGroup, setShowGroup] = useState(false);
   const [showSort, setShowSort] = useState(false);
@@ -82,6 +158,16 @@ export default function ItineraryView() {
   const [editingActivity, setEditingActivity] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
   const [draggedAct, setDraggedAct] = useState(null);
+  
+  // { stop, dayDateStr }
+  const [addingToDay, setAddingToDay] = useState(null);
+
+  const handleAddActivity = async (activityId) => {
+    if (addingToDay) {
+      await addActivityToStop(addingToDay.stop.id, activityId, addingToDay.dayDateStr);
+      setAddingToDay(null);
+    }
+  };
 
   const handleSaveActivity = async (id, updates) => {
     await updateActivityDetails(id, updates);
@@ -219,11 +305,8 @@ export default function ItineraryView() {
             {/* Controls */}
             <div className="flex items-center gap-[12px] flex-wrap lg:flex-nowrap pb-1 lg:pb-0">
               
-              {/* View Toggle */}
-              <div className="flex bg-surface border border-border rounded-[12px] overflow-hidden p-[2px]">
-                <button onClick={() => setViewMode('list')} className={`px-[12px] py-[6px] text-[12px] font-medium rounded-[8px] ${viewMode === 'list' ? 'bg-bg shadow-sm text-ink' : 'text-muted hover:text-ink'}`}>List</button>
-                <button onClick={() => setViewMode('timeline')} className={`px-[12px] py-[6px] text-[12px] font-medium rounded-[8px] ${viewMode === 'timeline' ? 'bg-bg shadow-sm text-ink' : 'text-muted hover:text-ink'}`}>Timeline</button>
-              </div>
+              {/* Controls placeholder if needed */}
+              <div></div>
 
               {/* Group By */}
               <div className="relative">
@@ -282,13 +365,7 @@ export default function ItineraryView() {
 
         {/* Itinerary Body */}
         <div className="px-[16px] md:px-[24px] max-w-[800px] mx-auto w-full">
-          {/* Column Headers (List mode) */}
-          {viewMode === 'list' && (
-            <div className="flex gap-[16px] mb-[24px] px-[16px]">
-               <div className="flex-1 text-[11px] font-bold text-muted uppercase tracking-[1px] font-['IBM_Plex_Mono']">Physical Activity</div>
-               <div className="w-[100px] md:w-[140px] text-right text-[11px] font-bold text-muted uppercase tracking-[1px] font-['IBM_Plex_Mono']">Expense</div>
-            </div>
-          )}
+
 
           {activities.length === 0 && groupBy === 'day' && tripStops.length === 0 && (
              <div className="text-center py-12 text-muted bg-surface rounded-[16px] border border-border border-dashed">
@@ -335,89 +412,20 @@ export default function ItineraryView() {
                         </div>
 
                         {!isCollapsed && (
-                          <div className="flex flex-col min-h-[60px]">
-                            {dayActivities.length === 0 ? (
-                              <div 
-                                onDragOver={handleDragOver}
-                                onDrop={(e) => { e.stopPropagation(); handleDrop(e, 0, day.dateStr); }}
-                                className="text-center py-[24px] text-muted bg-surface/50 rounded-[12px] border border-border border-dashed cursor-pointer hover:border-route transition-colors"
-                              >
-                                {draggedAct ? 'Drop Activity Here' : `+ Add Activity to Day ${day.dayNumber}`}
-                              </div>
-                            ) : (
-                              <>
-                                {/* Initial Drop Zone */}
-                                {draggedAct && (
-                                  <DropZone onDrop={(e) => handleDrop(e, 0, day.dateStr)} />
-                                )}
-
-                                {dayActivities.map((act, actIdx) => (
-                                  <React.Fragment key={act.id}>
-                                    {/* Hide the dragged card so it looks like it was picked up */}
-                                    <div 
-                                      className={`flex gap-[12px] md:gap-[16px] items-stretch group/row relative ${draggedAct?.id === act.id ? 'opacity-30' : ''}`}
-                                      draggable
-                                      onDragStart={(e) => handleDragStart(e, act)}
-                                      onDragEnd={() => setDraggedAct(null)}
-                                    >
-                                      
-                                      {/* Activity Card */}
-                                      <div 
-                                        onClick={() => setEditingActivity(act)}
-                                        className={`flex-1 bg-surface border rounded-[12px] p-[16px] cursor-pointer hover:border-route transition-colors shadow-sm flex flex-col md:flex-row md:items-center gap-[12px] ${viewMode === 'timeline' ? 'ml-[40px]' : ''} border-border`}
-                                      >
-                                        {viewMode === 'timeline' && (
-                                          <div className="absolute left-[-20px] top-[24px] w-[8px] h-[8px] rounded-full bg-horizon border-2 border-bg"></div>
-                                        )}
-                                        <div className="w-[48px] h-[48px] rounded-[8px] bg-bg flex items-center justify-center border border-border shrink-0 cursor-grab active:cursor-grabbing">
-                                          {act.category === 'food' ? '🍔' : act.category === 'sightseeing' ? '📸' : '📍'}
-                                        </div>
-                                        <div className="flex-1 pointer-events-none">
-                                          <h4 className="font-semibold text-ink text-[16px] mb-[4px] leading-tight">{act.title}</h4>
-                                          <div className="flex items-center gap-[8px] text-[12.5px] text-muted">
-                                            {act.time && <span className="font-['IBM_Plex_Mono']">{act.time}</span>}
-                                            {act.time && <span className="w-[4px] h-[4px] rounded-full bg-border"></span>}
-                                            <span>{act.city_name}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Expense Card */}
-                                      <div 
-                                        onClick={() => setEditingActivity(act)}
-                                        className="w-[100px] md:w-[140px] shrink-0 bg-surface border border-border rounded-[12px] p-[16px] cursor-pointer hover:border-horizon transition-colors shadow-sm flex flex-col items-end justify-center pointer-events-none"
-                                      >
-                                        <span className="text-[11px] text-muted font-medium uppercase tracking-[0.5px] mb-[2px]">Cost</span>
-                                        <span className="font-['IBM_Plex_Mono'] text-[16px] font-bold text-ink">
-                                          ${act.cost.toFixed(2)}
-                                        </span>
-                                      </div>
-
-                                    </div>
-
-                                    {/* Drop Zone after this item */}
-                                    {draggedAct ? (
-                                      <DropZone onDrop={(e) => handleDrop(e, act.order_index + 1, day.dateStr)} />
-                                    ) : (
-                                      <>
-                                        {/* Normal Spacing / Connector Arrow when NOT dragging */}
-                                        {actIdx < dayActivities.length - 1 && viewMode === 'list' && (
-                                          <div className="flex gap-[16px] py-[8px] px-[24px]">
-                                            <div className="w-[1px] h-[24px] bg-border relative">
-                                              <div className="absolute bottom-[-2px] left-[-3px] border-[4px] border-transparent border-t-border"></div>
-                                            </div>
-                                          </div>
-                                        )}
-                                        {actIdx < dayActivities.length - 1 && viewMode === 'timeline' && (
-                                          <div className="absolute left-[39px] w-[2px] h-[24px] bg-border bottom-[-24px]"></div>
-                                        )}
-                                        {(actIdx < dayActivities.length - 1 && viewMode !== 'list') && <div className="h-[12px]"></div>}
-                                      </>
-                                    )}
-                                  </React.Fragment>
-                                ))}
-                              </>
-                            )}
+                          <div className="flex flex-col min-h-[60px] relative">
+                            <ItineraryTimelineView 
+                              dayActivities={calculateGaps(dayActivities)}
+                              dayDateStr={day.dateStr}
+                              dayNumber={day.dayNumber}
+                              draggedAct={draggedAct}
+                              handleDragStart={handleDragStart}
+                              handleDragEnd={() => setDraggedAct(null)}
+                              handleDragOver={handleDragOver}
+                              handleDrop={handleDrop}
+                              setEditingActivity={setEditingActivity}
+                              onAddClick={(dateStr) => setAddingToDay({ stop, dayDateStr: dateStr })}
+                              idleGapThresholdMinutes={45}
+                            />
                           </div>
                         )}
                         
@@ -452,8 +460,12 @@ export default function ItineraryView() {
                   <React.Fragment key={act.id}>
                     <div className="flex gap-[12px] md:gap-[16px] items-stretch group/row relative">
                       <div className="flex-1 bg-surface border border-border rounded-[12px] p-[16px] flex flex-col md:flex-row md:items-center gap-[12px]">
-                        <div className="w-[48px] h-[48px] rounded-[8px] bg-bg flex items-center justify-center border border-border shrink-0">
-                          {act.category === 'food' ? '🍔' : act.category === 'sightseeing' ? '📸' : '📍'}
+                        <div className="w-[48px] h-[48px] rounded-[8px] bg-bg flex items-center justify-center border border-border shrink-0 overflow-hidden">
+                          {act.image_url ? (
+                            <img src={act.image_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-[20px]">{act.category === 'food' ? '🍔' : act.category === 'sightseeing' ? '📸' : '📍'}</span>
+                          )}
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-ink text-[16px] mb-[4px] leading-tight">{act.title}</h4>
@@ -494,10 +506,18 @@ export default function ItineraryView() {
 
       {/* Modals */}
       {editingActivity && (
-        <EditActivityModal 
+        <ActivityDetailModal 
           activity={editingActivity} 
           onClose={() => setEditingActivity(null)} 
           onSave={handleSaveActivity} 
+        />
+      )}
+      {addingToDay && (
+        <AddActivityModal 
+          stop={addingToDay.stop}
+          dayDateStr={addingToDay.dayDateStr}
+          onClose={() => setAddingToDay(null)}
+          onAdd={handleAddActivity}
         />
       )}
     </div>
