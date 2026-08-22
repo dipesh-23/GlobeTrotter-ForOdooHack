@@ -13,17 +13,34 @@ import Profile from "./pages/Profile";
 import Community from "./pages/Community";
 import TripCalendar from "./pages/TripCalendar";
 import AppShell from "./components/AppShell";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
+const isAdminUser = (user) => user?.email?.toLowerCase() === "admin@globetrotter.com";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-bg flex items-center justify-center font-['IBM_Plex_Mono'] text-muted">Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
+  if (isAdminUser(user)) return <Navigate to="/admin" replace />;
+  return children;
+}
+
+function AdminRoleGuard({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-bg flex items-center justify-center font-['IBM_Plex_Mono'] text-muted">Loading Admin...</div>;
+  
+  // Enforce standard admin credentials
+  if (!isAdminUser(user)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
   return children;
 }
 
 function PublicOnly({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
+  if (isAdminUser(user)) return <Navigate to="/admin" replace />;
   if (user) return <Navigate to="/dashboard" replace />;
   return children;
 }
@@ -34,6 +51,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Admin Route */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoleGuard>
+              <AdminDashboard />
+            </AdminRoleGuard>
+          }
+        />
+
         <Route
           path="/login"
           element={
