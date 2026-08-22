@@ -1,14 +1,28 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Plus, Trash2, ArrowLeft, MapPin, Calendar, Wallet, ChevronDown, ChevronUp, Tag } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
-import { useTrip } from '../hooks/useTrip';
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import {
+  Plus,
+  Trash2,
+  ArrowLeft,
+  MapPin,
+  Calendar,
+  Wallet,
+  ChevronDown,
+  ChevronUp,
+  Tag,
+} from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
+import { useTrip } from "../hooks/useTrip";
 
 const getCityPhoto = (cityName) =>
-  `https://picsum.photos/seed/${encodeURIComponent(cityName || 'city')}/600/400`;
+  `https://picsum.photos/seed/${encodeURIComponent(
+    cityName || "city"
+  )}/600/400`;
 
 const getActivityPhoto = (actName) =>
-  `https://picsum.photos/seed/${encodeURIComponent(actName || 'activity')}/400/300`;
+  `https://picsum.photos/seed/${encodeURIComponent(
+    actName || "activity"
+  )}/400/300`;
 
 function SimpleModal({ open, onClose, title, children }) {
   if (!open) return null;
@@ -43,7 +57,9 @@ export default function ItineraryBuilder() {
     setOrderedStops(sorted);
     // Auto-expand all stops
     const expanded = {};
-    sorted.forEach(s => { expanded[s.id] = true; });
+    sorted.forEach((s) => {
+      expanded[s.id] = true;
+    });
     setExpandedStops(expanded);
   }, [stops]);
 
@@ -57,10 +73,10 @@ export default function ItineraryBuilder() {
       }
 
       const { data } = await supabase
-        .from('cities')
-        .select('image_url')
-        .eq('region', trip.region)
-        .not('image_url', 'is', null)
+        .from("cities")
+        .select("image_url")
+        .eq("region", trip.region)
+        .not("image_url", "is", null)
         .limit(1)
         .maybeSingle();
 
@@ -77,31 +93,35 @@ export default function ItineraryBuilder() {
   }, [trip?.region]);
 
   const [cityModalOpen, setCityModalOpen] = useState(false);
-  const [citySearch, setCitySearch] = useState('');
+  const [citySearch, setCitySearch] = useState("");
   const [cityResults, setCityResults] = useState([]);
 
   const [actModalOpen, setActModalOpen] = useState(false);
   const [activeStopIdForAct, setActiveStopIdForAct] = useState(null);
-  const [actSearch, setActSearch] = useState('');
+  const [actSearch, setActSearch] = useState("");
   const [actResults, setActResults] = useState([]);
 
   useEffect(() => {
     if (cityModalOpen) {
-      let query = supabase.from('cities').select('*').ilike('name', `%${citySearch}%`).limit(12);
-      if (trip?.region) query = query.eq('region', trip.region);
+      let query = supabase
+        .from("cities")
+        .select("*")
+        .ilike("name", `%${citySearch}%`)
+        .limit(12);
+      if (trip?.region) query = query.eq("region", trip.region);
       query.then(({ data }) => setCityResults(data || []));
     }
   }, [citySearch, cityModalOpen, trip?.region]);
 
   useEffect(() => {
     if (actModalOpen && activeStopIdForAct) {
-      const stop = stops.find(s => s.id === activeStopIdForAct);
+      const stop = stops.find((s) => s.id === activeStopIdForAct);
       if (stop?.city?.id) {
         supabase
-          .from('activities')
-          .select('*')
-          .eq('city_id', stop.city.id)
-          .ilike('name', `%${actSearch}%`)
+          .from("activities")
+          .select("*")
+          .eq("city_id", stop.city.id)
+          .ilike("name", `%${actSearch}%`)
           .limit(15)
           .then(({ data }) => setActResults(data || []));
       }
@@ -110,21 +130,29 @@ export default function ItineraryBuilder() {
 
   async function addStop(city) {
     const nextOrder = stops.length;
-    const defaultStart = stops.at(-1)?.end_date ?? trip?.start_date ?? new Date().toISOString().slice(0, 10);
-    await supabase.from('trip_stops').insert({
-      trip_id: tripId, city_id: city.id, order_index: nextOrder,
-      start_date: defaultStart, end_date: defaultStart,
+    const defaultStart =
+      stops.at(-1)?.end_date ??
+      trip?.start_date ??
+      new Date().toISOString().slice(0, 10);
+    await supabase.from("trip_stops").insert({
+      trip_id: tripId,
+      city_id: city.id,
+      order_index: nextOrder,
+      start_date: defaultStart,
+      end_date: defaultStart,
     });
     setCityModalOpen(false);
-    setCitySearch('');
+    setCitySearch("");
     refetch();
   }
 
   async function addActivity(activity) {
-    const stop = stops.find(s => s.id === activeStopIdForAct);
-    await supabase.from('stop_activities').insert({
-      trip_stop_id: stop.id, activity_id: activity.id,
-      scheduled_date: stop.start_date, order_index: stop.activities?.length ?? 0,
+    const stop = stops.find((s) => s.id === activeStopIdForAct);
+    await supabase.from("stop_activities").insert({
+      trip_stop_id: stop.id,
+      activity_id: activity.id,
+      scheduled_date: stop.start_date,
+      order_index: stop.activities?.length ?? 0,
     });
     setActModalOpen(false);
     setActiveStopIdForAct(null);
@@ -132,33 +160,36 @@ export default function ItineraryBuilder() {
   }
 
   async function deleteStop(stopId) {
-    if (confirm('Remove this stop from the trip?')) {
-      await supabase.from('trip_stops').delete().eq('id', stopId);
+    if (confirm("Remove this stop from the trip?")) {
+      await supabase.from("trip_stops").delete().eq("id", stopId);
       refetch();
     }
   }
 
   async function deleteActivity(stopActId) {
-    await supabase.from('stop_activities').delete().eq('id', stopActId);
+    await supabase.from("stop_activities").delete().eq("id", stopActId);
     refetch();
   }
 
   async function updateStopField(stopId, field, value) {
-    await supabase.from('trip_stops').update({ [field]: value }).eq('id', stopId);
+    await supabase
+      .from("trip_stops")
+      .update({ [field]: value })
+      .eq("id", stopId);
     refetch();
   }
 
   const toggleExpand = (stopId) => {
-    setExpandedStops(prev => ({ ...prev, [stopId]: !prev[stopId] }));
+    setExpandedStops((prev) => ({ ...prev, [stopId]: !prev[stopId] }));
   };
 
   const categoryColors = {
-    adventure: 'bg-orange-100 text-orange-700',
-    culture: 'bg-purple-100 text-purple-700',
-    food: 'bg-green-100 text-green-700',
-    sightseeing: 'bg-blue-100 text-blue-700',
-    nature: 'bg-emerald-100 text-emerald-700',
-    wellness: 'bg-pink-100 text-pink-700',
+    adventure: "bg-orange-100 text-orange-700",
+    culture: "bg-purple-100 text-purple-700",
+    food: "bg-green-100 text-green-700",
+    sightseeing: "bg-blue-100 text-blue-700",
+    nature: "bg-emerald-100 text-emerald-700",
+    wellness: "bg-pink-100 text-pink-700",
   };
 
   if (loading && stops.length === 0) {
@@ -174,14 +205,16 @@ export default function ItineraryBuilder() {
 
   return (
     <div className="min-h-screen bg-[#FBF7F0]">
-
       {/* ── Hero Banner ── */}
       <div className="relative h-64 md:h-80 overflow-hidden">
         <img
           src={regionPhoto || getCityPhoto(trip?.region)}
-          alt={trip?.region || 'Trip'}
+          alt={trip?.region || "Trip"}
           className="w-full h-full object-cover"
-          onError={(e) => { e.target.onerror = null; e.target.src = getCityPhoto(trip?.region); }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = getCityPhoto(trip?.region);
+          }}
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
@@ -204,15 +237,26 @@ export default function ItineraryBuilder() {
                 <MapPin size={11} /> {trip.region}
               </span>
             )}
-            <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight"
-                style={{ fontFamily: "'Fraunces', serif" }}>
-              {trip?.name ?? 'Build Your Itinerary'}
+            <h1
+              className="text-3xl md:text-4xl font-bold text-white leading-tight"
+              style={{ fontFamily: "'Fraunces', serif" }}
+            >
+              {trip?.name ?? "Build Your Itinerary"}
             </h1>
             {trip?.start_date && (
               <p className="text-white/70 text-sm mt-1 flex items-center gap-1.5">
                 <Calendar size={13} />
-                {new Date(trip.start_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                {trip.end_date && ` → ${new Date(trip.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
+                {new Date(trip.start_date).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+                {trip.end_date &&
+                  ` → ${new Date(trip.end_date).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}`}
               </p>
             )}
           </div>
@@ -221,16 +265,18 @@ export default function ItineraryBuilder() {
 
       {/* ── Main Content ── */}
       <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
-
         {/* Empty state */}
         {orderedStops.length === 0 && (
           <div className="text-center py-16">
             <div className="w-20 h-20 bg-[#E4DDD0] rounded-full flex items-center justify-center mx-auto mb-4">
               <MapPin size={32} className="text-[#6B7268]" />
             </div>
-            <h2 className="text-xl font-bold text-[#1F2A24] mb-2">No stops yet</h2>
+            <h2 className="text-xl font-bold text-[#1F2A24] mb-2">
+              No stops yet
+            </h2>
             <p className="text-[#6B7268] text-sm mb-6">
-              Add your first city stop to start building your {trip?.region} itinerary.
+              Add your first city stop to start building your {trip?.region}{" "}
+              itinerary.
             </p>
           </div>
         )}
@@ -248,7 +294,10 @@ export default function ItineraryBuilder() {
                   src={stop.city?.image_url || getCityPhoto(stop.city?.name)}
                   alt={stop.city?.name}
                   className="w-full h-full object-contain"
-                  onError={(e) => { e.target.onerror = null; e.target.src = getCityPhoto(stop.city?.name); }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = getCityPhoto(stop.city?.name);
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
@@ -261,7 +310,10 @@ export default function ItineraryBuilder() {
 
                 {/* City name on image */}
                 <div className="absolute bottom-4 left-4 right-12">
-                  <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Fraunces', serif" }}>
+                  <h2
+                    className="text-2xl font-bold text-white"
+                    style={{ fontFamily: "'Fraunces', serif" }}
+                  >
                     {stop.city?.name}
                   </h2>
                   <p className="text-white/70 text-sm">{stop.city?.country}</p>
@@ -273,7 +325,11 @@ export default function ItineraryBuilder() {
                     onClick={() => toggleExpand(stop.id)}
                     className="w-8 h-8 flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full text-white transition-colors"
                   >
-                    {expandedStops[stop.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    {expandedStops[stop.id] ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
                   </button>
                   <button
                     onClick={() => deleteStop(stop.id)}
@@ -287,7 +343,6 @@ export default function ItineraryBuilder() {
               {/* Expandable body */}
               {expandedStops[stop.id] && (
                 <div className="p-5 space-y-5">
-
                   {/* Date & Budget row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-[#FBF7F0] rounded-xl p-4 border border-[#E4DDD0]">
@@ -297,16 +352,26 @@ export default function ItineraryBuilder() {
                       <div className="flex items-center gap-3">
                         <input
                           type="date"
-                          value={stop.start_date || ''}
-                          onChange={(e) => updateStopField(stop.id, 'start_date', e.target.value)}
+                          value={stop.start_date || ""}
+                          onChange={(e) =>
+                            updateStopField(
+                              stop.id,
+                              "start_date",
+                              e.target.value
+                            )
+                          }
                           className="flex-1 bg-white border border-[#E4DDD0] rounded-lg px-3 py-2 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D]"
                         />
-                        <span className="text-[#6B7268] text-xs font-medium">to</span>
+                        <span className="text-[#6B7268] text-xs font-medium">
+                          to
+                        </span>
                         <input
                           type="date"
-                          value={stop.end_date || ''}
-                          min={stop.start_date || ''}
-                          onChange={(e) => updateStopField(stop.id, 'end_date', e.target.value)}
+                          value={stop.end_date || ""}
+                          min={stop.start_date || ""}
+                          onChange={(e) =>
+                            updateStopField(stop.id, "end_date", e.target.value)
+                          }
                           className="flex-1 bg-white border border-[#E4DDD0] rounded-lg px-3 py-2 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D]"
                         />
                       </div>
@@ -318,20 +383,36 @@ export default function ItineraryBuilder() {
                       </h4>
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-[#6B7268] w-24 flex-shrink-0">Stay / night</span>
+                          <span className="text-xs text-[#6B7268] w-24 flex-shrink-0">
+                            Stay / night
+                          </span>
                           <input
                             type="number"
                             value={stop.stay_cost_per_night || 0}
-                            onChange={(e) => updateStopField(stop.id, 'stay_cost_per_night', e.target.value)}
+                            onChange={(e) =>
+                              updateStopField(
+                                stop.id,
+                                "stay_cost_per_night",
+                                e.target.value
+                              )
+                            }
                             className="flex-1 bg-white border border-[#E4DDD0] rounded-lg px-3 py-2 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D]"
                           />
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-[#6B7268] w-24 flex-shrink-0">Transport</span>
+                          <span className="text-xs text-[#6B7268] w-24 flex-shrink-0">
+                            Transport
+                          </span>
                           <input
                             type="number"
                             value={stop.transport_cost_to_here || 0}
-                            onChange={(e) => updateStopField(stop.id, 'transport_cost_to_here', e.target.value)}
+                            onChange={(e) =>
+                              updateStopField(
+                                stop.id,
+                                "transport_cost_to_here",
+                                e.target.value
+                              )
+                            }
                             className="flex-1 bg-white border border-[#E4DDD0] rounded-lg px-3 py-2 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D]"
                           />
                         </div>
@@ -341,11 +422,13 @@ export default function ItineraryBuilder() {
 
                   {/* Activities Section */}
                   <div>
-                    <h4 className="text-xs font-bold text-[#6B7268] uppercase tracking-wider mb-3">Activities</h4>
+                    <h4 className="text-xs font-bold text-[#6B7268] uppercase tracking-wider mb-3">
+                      Activities
+                    </h4>
 
                     {stop.activities?.length > 0 ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        {stop.activities.map(act => (
+                        {stop.activities.map((act) => (
                           <div
                             key={act.id}
                             className="group relative bg-white border border-[#E4DDD0] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -353,10 +436,15 @@ export default function ItineraryBuilder() {
                             {/* Activity image */}
                             <div className="h-28 relative bg-[#1F2A24] overflow-hidden">
                               <img
-                                src={act.image_url || getActivityPhoto(act.name)}
+                                src={
+                                  act.image_url || getActivityPhoto(act.name)
+                                }
                                 alt={act.name}
                                 className="w-full h-full object-contain"
-                                onError={(e) => { e.target.onerror = null; e.target.src = getActivityPhoto(act.name); }}
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = getActivityPhoto(act.name);
+                                }}
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                               {/* Delete button */}
@@ -368,14 +456,26 @@ export default function ItineraryBuilder() {
                               </button>
                               {/* Cost badge on image */}
                               <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                ₹{Number(act.effective_cost).toLocaleString('en-IN')}
+                                ₹
+                                {Number(act.effective_cost).toLocaleString(
+                                  "en-IN"
+                                )}
                               </span>
                             </div>
                             <div className="p-3">
-                              <p className="font-semibold text-sm text-[#1F2A24] truncate">{act.name}</p>
+                              <p className="font-semibold text-sm text-[#1F2A24] truncate">
+                                {act.name}
+                              </p>
                               {act.category && (
-                                <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full mt-1 ${categoryColors[act.category?.toLowerCase()] || 'bg-gray-100 text-gray-600'}`}>
-                                  <Tag size={9} />{act.category}
+                                <span
+                                  className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full mt-1 ${
+                                    categoryColors[
+                                      act.category?.toLowerCase()
+                                    ] || "bg-gray-100 text-gray-600"
+                                  }`}
+                                >
+                                  <Tag size={9} />
+                                  {act.category}
                                 </span>
                               )}
                             </div>
@@ -383,11 +483,16 @@ export default function ItineraryBuilder() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-[#6B7268] italic mb-3">No activities added yet.</p>
+                      <p className="text-sm text-[#6B7268] italic mb-3">
+                        No activities added yet.
+                      </p>
                     )}
 
                     <button
-                      onClick={() => { setActiveStopIdForAct(stop.id); setActModalOpen(true); }}
+                      onClick={() => {
+                        setActiveStopIdForAct(stop.id);
+                        setActModalOpen(true);
+                      }}
                       className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-[#E4DDD0] hover:border-[#C4622D] rounded-xl text-[#6B7268] hover:text-[#C4622D] transition-colors text-sm font-medium"
                     >
                       <Plus size={16} /> Add Activity
@@ -401,7 +506,10 @@ export default function ItineraryBuilder() {
 
         {/* ── Add Stop Button ── */}
         <button
-          onClick={() => { setCitySearch(''); setCityModalOpen(true); }}
+          onClick={() => {
+            setCitySearch("");
+            setCityModalOpen(true);
+          }}
           className="w-full mt-6 flex items-center justify-center gap-3 py-5 bg-white border-2 border-dashed border-[#C4622D]/40 hover:border-[#C4622D] rounded-2xl text-[#C4622D] hover:bg-[#FEF5F0] transition-all text-base font-semibold shadow-sm"
         >
           <Plus size={20} /> Add a City Stop
@@ -427,17 +535,21 @@ export default function ItineraryBuilder() {
       </div>
 
       {/* ── City Selection Modal ── */}
-      <SimpleModal open={cityModalOpen} onClose={() => setCityModalOpen(false)} title={`Add a City Stop ${trip?.region ? `· ${trip.region}` : ''}`}>
+      <SimpleModal
+        open={cityModalOpen}
+        onClose={() => setCityModalOpen(false)}
+        title={`Add a City Stop ${trip?.region ? `· ${trip.region}` : ""}`}
+      >
         <input
           type="text"
           placeholder="Search cities…"
           value={citySearch}
-          onChange={e => setCitySearch(e.target.value)}
+          onChange={(e) => setCitySearch(e.target.value)}
           className="w-full border border-[#E4DDD0] rounded-xl px-4 py-3 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D] mb-4"
           autoFocus
         />
         <div className="grid grid-cols-2 gap-3">
-          {cityResults.map(city => (
+          {cityResults.map((city) => (
             <button
               key={city.id}
               onClick={() => addStop(city)}
@@ -448,17 +560,24 @@ export default function ItineraryBuilder() {
                   src={city.image_url || getCityPhoto(city.name)}
                   alt={city.name}
                   className="w-full h-full object-contain"
-                  onError={(e) => { e.target.onerror = null; e.target.src = getCityPhoto(city.name); }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = getCityPhoto(city.name);
+                  }}
                 />
               </div>
               <div className="p-2 bg-white">
-                <p className="font-bold text-[#1F2A24] text-sm truncate">{city.name}</p>
+                <p className="font-bold text-[#1F2A24] text-sm truncate">
+                  {city.name}
+                </p>
                 <p className="text-[#6B7268] text-[11px]">{city.country}</p>
               </div>
             </button>
           ))}
           {cityResults.length === 0 && (
-            <p className="col-span-2 text-center text-sm text-[#6B7268] py-6">No cities found.</p>
+            <p className="col-span-2 text-center text-sm text-[#6B7268] py-6">
+              No cities found.
+            </p>
           )}
         </div>
       </SimpleModal>
@@ -466,19 +585,23 @@ export default function ItineraryBuilder() {
       {/* ── Activity Selection Modal ── */}
       <SimpleModal
         open={actModalOpen}
-        onClose={() => { setActModalOpen(false); setActiveStopIdForAct(null); setActSearch(''); }}
+        onClose={() => {
+          setActModalOpen(false);
+          setActiveStopIdForAct(null);
+          setActSearch("");
+        }}
         title="Select an Activity"
       >
         <input
           type="text"
           placeholder="Search activities…"
           value={actSearch}
-          onChange={e => setActSearch(e.target.value)}
+          onChange={(e) => setActSearch(e.target.value)}
           className="w-full border border-[#E4DDD0] rounded-xl px-4 py-3 text-sm text-[#1F2A24] focus:outline-none focus:border-[#C4622D] mb-4"
           autoFocus
         />
         <div className="flex flex-col gap-3">
-          {actResults.map(act => (
+          {actResults.map((act) => (
             <button
               key={act.id}
               onClick={() => addActivity(act)}
@@ -490,24 +613,37 @@ export default function ItineraryBuilder() {
                   src={act.image_url || getActivityPhoto(act.name)}
                   alt={act.name}
                   className="w-full h-full object-contain"
-                  onError={(e) => { e.target.onerror = null; e.target.src = getActivityPhoto(act.name); }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = getActivityPhoto(act.name);
+                  }}
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm text-[#1F2A24] truncate">{act.name}</p>
+                <p className="font-bold text-sm text-[#1F2A24] truncate">
+                  {act.name}
+                </p>
                 {act.category && (
-                  <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full mt-1 ${categoryColors[act.category?.toLowerCase()] || 'bg-gray-100 text-gray-600'}`}>
-                    <Tag size={9} />{act.category}
+                  <span
+                    className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full mt-1 ${
+                      categoryColors[act.category?.toLowerCase()] ||
+                      "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    <Tag size={9} />
+                    {act.category}
                   </span>
                 )}
               </div>
               <span className="text-[#C4622D] font-bold text-sm flex-shrink-0">
-                ₹{Number(act.estimated_cost).toLocaleString('en-IN')}
+                ₹{Number(act.estimated_cost).toLocaleString("en-IN")}
               </span>
             </button>
           ))}
           {actResults.length === 0 && (
-            <p className="text-center text-sm text-[#6B7268] py-6">No activities found for this city.</p>
+            <p className="text-center text-sm text-[#6B7268] py-6">
+              No activities found for this city.
+            </p>
           )}
         </div>
       </SimpleModal>
