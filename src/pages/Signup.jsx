@@ -10,11 +10,13 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (!displayName || !email || !password) {
       setError("Please fill in all fields.");
@@ -26,21 +28,34 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { display_name: displayName } },
-    });
-    setLoading(false);
+    try {
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { display_name: displayName } },
+      });
 
-    if (authError) {
-      setError(authError.message);
-      return;
+      if (authError) {
+        if (authError.message.toLowerCase().includes("rate limit")) {
+          setError(
+            "Supabase has temporarily limited signup emails. Wait a while before trying again, or disable email confirmation in Supabase for this demo."
+          );
+        } else {
+          setError(authError.message);
+        }
+        return;
+      }
+
+      if (data.session) {
+        navigate("/dashboard");
+      } else {
+        setSuccess("Account created. Check your email to confirm your account.");
+      }
+    } catch {
+      setError("Unable to create your account right now. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    // "Confirm email" should be OFF in Supabase Auth settings for the demo,
-    // so this returns a session immediately and we can go straight in.
-    navigate("/dashboard");
   }
 
   return (
@@ -86,6 +101,9 @@ export default function Signup() {
 
           {error && (
             <p className="font-body text-small text-danger -mt-1">{error}</p>
+          )}
+          {success && (
+            <p className="font-body text-small text-horizon -mt-1">{success}</p>
           )}
 
           <Button type="submit" disabled={loading} className="w-full mt-2">
