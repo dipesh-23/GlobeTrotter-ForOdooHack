@@ -32,11 +32,11 @@ export default function SetBudgetTargetModal({ isOpen, onClose, currentBudget, o
         <form onSubmit={handleSubmit} className="p-[24px] flex flex-col gap-[20px]">
           <div>
             <label className="block text-[12px] font-medium uppercase tracking-wider text-muted font-['IBM_Plex_Mono'] mb-[8px]">
-              Total Budget Target ($)
+              Total Budget Target (₹)
             </label>
             <div className="relative">
               <span className="absolute left-[12px] top-1/2 -translate-y-1/2 text-muted font-['IBM_Plex_Mono'] font-medium">
-                $
+                ₹
               </span>
               <input 
                 type="number" 

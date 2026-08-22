@@ -31,7 +31,7 @@ export default function StatCardsRow({ stats }) {
     {
       id: 'budget',
       label: 'Avg. Budget/Trip',
-      value: `$${avgBudget?.toFixed(0) || 0}`,
+      value: `₹${avgBudget?.toFixed(0) || 0}`,
       trend: '-2% MoM',
       positive: false,
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-[18px] h-[18px]"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>

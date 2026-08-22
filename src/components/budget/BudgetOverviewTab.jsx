@@ -41,7 +41,7 @@ export default function BudgetOverviewTab({ expenses }) {
       return (
         <div className="bg-surface border border-border p-[12px] rounded-[8px] shadow-sm">
           <p className="font-['IBM_Plex_Mono'] font-medium text-[13px] text-ink capitalize mb-[4px]">{payload[0].name || payload[0].payload.day}</p>
-          <p className="font-['Fraunces'] font-semibold text-[16px] text-ink">${payload[0].value.toLocaleString()}</p>
+          <p className="font-['Fraunces'] font-semibold text-[16px] text-ink">₹{payload[0].value.toLocaleString()}</p>
         </div>
       );
     }
@@ -94,7 +94,7 @@ export default function BudgetOverviewTab({ expenses }) {
               <BarChart data={dailyData} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E4DDD0" vertical={false} />
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#6B7268' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: '#6B7268', fontFamily: 'IBM Plex Mono' }} axisLine={false} tickLine={false} tickFormatter={(value) => `$${value}`} />
+                <YAxis tick={{ fontSize: 12, fill: '#6B7268', fontFamily: 'IBM Plex Mono' }} axisLine={false} tickLine={false} tickFormatter={(value) => `₹${value}`} />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: '#FBF7F0' }} />
                 <Bar dataKey="cost" fill="#C4622D" radius={[4, 4, 0, 0]} maxBarSize={50} />
               </BarChart>

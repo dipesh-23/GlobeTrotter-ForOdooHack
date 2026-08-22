@@ -21,7 +21,7 @@ function CostEditor({ expense, onUpdate }) {
   if (isEditing) {
     return (
       <div className="flex items-center gap-[8px]">
-        <span className="text-muted text-[13px]">$</span>
+        <span className="text-muted text-[13px]">₹</span>
         <input 
           type="number" 
           value={val}
@@ -44,7 +44,7 @@ function CostEditor({ expense, onUpdate }) {
       }`}
     >
       <span className="text-[14px] font-['IBM_Plex_Mono'] font-medium text-ink group-hover:text-horizon transition-colors">
-        {expense.isEstimated ? `~$${expense.cost}` : `$${expense.cost}`}
+        {expense.isEstimated ? `~₹${expense.cost}` : `₹${expense.cost}`}
       </span>
       {!isSynthetic && (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-[12px] h-[12px] text-muted opacity-0 group-hover:opacity-100"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -116,7 +116,7 @@ export default function BudgetByDayTab({ expenses, onUpdateExpense }) {
                     Total for Day {day}
                   </span>
                   <span className="font-['Fraunces'] font-semibold text-[20px] text-ink">
-                    ${total.toLocaleString()}
+                    ₹{total.toLocaleString()}
                   </span>
                 </div>
               </div>

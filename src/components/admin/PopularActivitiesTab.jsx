@@ -230,7 +230,7 @@ export default function PopularActivitiesTab({ data }) {
                       </span>
                     </td>
                     <td className="p-[16px] text-[14px] font-medium text-ink text-right">{act.count}</td>
-                    <td className="p-[16px] text-[14px] text-muted font-['IBM_Plex_Mono'] text-right">${act.avgCost}</td>
+                    <td className="p-[16px] text-[14px] text-muted font-['IBM_Plex_Mono'] text-right">₹{act.avgCost}</td>
                   </tr>
                 ))
               )}

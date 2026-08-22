@@ -42,7 +42,7 @@ export default function BudgetByCategoryTab({ expenses, totalCost }) {
                   </span>
                 </div>
                 <span className={`font-['Fraunces'] font-semibold text-[24px] ${catStyle.text}`}>
-                  ${total.toLocaleString()}
+                  ₹{total.toLocaleString()}
                 </span>
               </div>
 
@@ -59,7 +59,7 @@ export default function BudgetByCategoryTab({ expenses, totalCost }) {
                     </div>
                     <div className="flex flex-col items-end">
                       <span className="text-[15px] font-['IBM_Plex_Mono'] font-medium text-ink">
-                        {exp.isEstimated ? `~$${exp.cost}` : `$${exp.cost}`}
+                        {exp.isEstimated ? `~₹${exp.cost}` : `₹${exp.cost}`}
                       </span>
                     </div>
                   </div>
