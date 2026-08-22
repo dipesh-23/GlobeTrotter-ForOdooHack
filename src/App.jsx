@@ -54,69 +54,51 @@ export default function App() {
 
         <Route
           path="/dashboard"
-          element={
-            <Protected>
-              {appShell(<Dashboard />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<Dashboard />)}</Protected>}
         />
-        <Route path="/trips" element={appShell(<MyTrips />)} />
-        <Route path="/community" element={appShell(<Community />)} />
+        <Route
+          path="/trips"
+          element={appShell(
+            <Protected>
+              <MyTrips />
+            </Protected>
+          )}
+        />
+        <Route
+          path="/community"
+          element={appShell(
+            <Protected>
+              <Community />
+            </Protected>
+          )}
+        />
         <Route
           path="/profile"
-          element={
-            <Protected>
-              {appShell(<Profile />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<Profile />)}</Protected>}
         />
         <Route
           path="/trips/new"
-          element={
-            <Protected>
-              {appShell(<CreateTrip />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<CreateTrip />)}</Protected>}
         />
         <Route
           path="/trips/:tripId/build"
-          element={
-            <Protected>
-              {appShell(<ItineraryBuilder />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<ItineraryBuilder />)}</Protected>}
         />
         <Route
           path="/trips/:tripId/view"
-          element={
-            <Protected>
-              {appShell(<ItineraryView />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<ItineraryView />)}</Protected>}
         />
         <Route
           path="/trips/:tripId/budget"
-          element={
-            <Protected>
-              {appShell(<BudgetView />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<BudgetView />)}</Protected>}
         />
         <Route
           path="/trips/:tripId/calendar"
-          element={
-            <Protected>
-              {appShell(<TripCalendar />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<TripCalendar />)}</Protected>}
         />
         <Route
           path="/calendar"
-          element={
-            <Protected>
-              {appShell(<TripCalendar />)}
-            </Protected>
-          }
+          element={<Protected>{appShell(<TripCalendar />)}</Protected>}
         />
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

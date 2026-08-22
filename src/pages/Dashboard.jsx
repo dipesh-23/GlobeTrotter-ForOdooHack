@@ -81,7 +81,7 @@ const Dashboard = () => {
               </h2>
               {trips.length > 0 && (
                 <Link
-                  to="/my-trips"
+                  to="/trips"
                   className="text-horizon text-body hover:underline"
                 >
                   View all
