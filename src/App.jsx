@@ -9,6 +9,7 @@ import ItineraryBuilder from "./pages/ItineraryBuilder";
 import ItineraryView from "./pages/ItineraryView";
 import BudgetView from "./pages/BudgetView";
 import PublicTrip from "./pages/PublicTrip";
+import Profile from "./pages/Profile";
 import TripCalendar from "./pages/TripCalendar";
 
 function Protected({ children }) {
@@ -55,11 +56,12 @@ export default function App() {
             </Protected>
           }
         />
+        <Route path="/trips" element={<MyTrips />} />
         <Route
-          path="/trips"
+          path="/profile"
           element={
             <Protected>
-              <MyTrips />
+              <Profile />
             </Protected>
           }
         />

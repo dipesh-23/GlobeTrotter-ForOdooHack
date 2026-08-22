@@ -1,4 +1,39 @@
 @import "tailwindcss";
+@layer base {
+  :root {
+    --color-bg: #fbf7f0;
+    --color-surface: #ffffff;
+    --color-ink: #1f2a24;
+    --color-muted: #6b7268;
+    --color-route: #c4622d;
+    --color-horizon: #2b5d6b;
+    --color-border: #e4ddd0;
+    --color-success: #4a7a4e;
+    --color-danger: #b3452e;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --space-2xl: 64px;
+
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 1px 3px rgba(31, 42, 36, 0.08),
+      0 1px 2px rgba(31, 42, 36, 0.04);
+    --shadow-hover: 0 4px 12px rgba(31, 42, 36, 0.12);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
 
 @theme {
   /* Colors — see UI_SCHEMA.md section 1 */

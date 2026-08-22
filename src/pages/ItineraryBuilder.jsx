@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Plus,
@@ -48,20 +48,12 @@ export default function ItineraryBuilder() {
   const { tripId } = useParams();
   const { trip, stops, loading, refetch } = useTrip(tripId);
 
-  const [orderedStops, setOrderedStops] = useState([]);
+  const orderedStops = useMemo(
+    () => [...stops].sort((a, b) => a.order_index - b.order_index),
+    [stops]
+  );
   const [expandedStops, setExpandedStops] = useState({});
   const [regionPhoto, setRegionPhoto] = useState(null);
-
-  useEffect(() => {
-    const sorted = [...stops].sort((a, b) => a.order_index - b.order_index);
-    setOrderedStops(sorted);
-    // Auto-expand all stops
-    const expanded = {};
-    sorted.forEach((s) => {
-      expanded[s.id] = true;
-    });
-    setExpandedStops(expanded);
-  }, [stops]);
 
   useEffect(() => {
     let active = true;
@@ -325,7 +317,7 @@ export default function ItineraryBuilder() {
                     onClick={() => toggleExpand(stop.id)}
                     className="w-8 h-8 flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full text-white transition-colors"
                   >
-                    {expandedStops[stop.id] ? (
+                    {expandedStops[stop.id] ?? true ? (
                       <ChevronUp size={16} />
                     ) : (
                       <ChevronDown size={16} />
@@ -341,7 +333,7 @@ export default function ItineraryBuilder() {
               </div>
 
               {/* Expandable body */}
-              {expandedStops[stop.id] && (
+              {(expandedStops[stop.id] ?? true) && (
                 <div className="p-5 space-y-5">
                   {/* Date & Budget row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
