@@ -9,6 +9,7 @@ import ItineraryBuilder from "./pages/ItineraryBuilder";
 import ItineraryView from "./pages/ItineraryView";
 import BudgetView from "./pages/BudgetView";
 import PublicTrip from "./pages/PublicTrip";
+import TripCalendar from "./pages/TripCalendar";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -91,6 +92,22 @@ export default function App() {
           element={
             <Protected>
               <BudgetView />
+            </Protected>
+          }
+        />
+        <Route
+          path="/trips/:tripId/calendar"
+          element={
+            <Protected>
+              <TripCalendar />
+            </Protected>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <Protected>
+              <TripCalendar />
             </Protected>
           }
         />
