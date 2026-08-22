@@ -93,7 +93,7 @@ export default function MyTrips() {
           <a href="#" className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm">My Trips</a>
           <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Explore</a>
           <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Saved</a>
-          <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Profile</a>
+          <Link to="/profile" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Profile</Link>
         </nav>
       </aside>
 
