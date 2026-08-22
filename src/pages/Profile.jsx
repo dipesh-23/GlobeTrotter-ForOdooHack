@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTrips } from "../hooks/useTrips";
 import ProfileHeader from "../components/profile/ProfileHeader";
@@ -8,7 +8,6 @@ import { useMemo } from "react";
 export default function Profile() {
   const { user } = useAuth();
   const { trips, loading, error, deleteTrip } = useTrips();
-  const navigate = useNavigate();
 
   // Sort and filter trips
   const { upcoming, past, totalCountries } = useMemo(() => {
@@ -71,69 +70,8 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-bg relative">
-      {/* Desktop Sidebar (lg: >= 1024px) */}
-      <aside className="hidden lg:flex flex-col w-[220px] fixed inset-y-0 left-0 border-r border-border bg-bg p-[24px] z-20">
-        <div
-          className="flex items-center gap-[10px] mb-[40px] cursor-pointer"
-          onClick={() => navigate("/dashboard")}
-        >
-          <div className="w-[34px] h-[34px] rounded-full relative shrink-0 overflow-hidden bg-route/10 flex items-center justify-center">
-            <span className="font-['Fraunces'] font-bold text-route text-[18px]">
-              G
-            </span>
-          </div>
-          <div className="font-['Fraunces'] font-semibold text-[20px] tracking-[0.2px] text-ink">
-            GlobeTrotter<span className="text-route">.</span>
-          </div>
-        </div>
-
-        <nav className="flex flex-col gap-[8px] mb-[40px]">
-          <Link
-            to="/trips"
-            className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors"
-          >
-            My Trips
-          </Link>
-          <a
-            href="#"
-            className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors"
-          >
-            Explore
-          </a>
-          <a
-            href="#"
-            className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors"
-          >
-            Saved
-          </a>
-          <Link
-            to="/profile"
-            className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm"
-          >
-            Profile
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Mobile Header (hidden on lg) */}
-      <div className="lg:hidden p-[18px] border-b border-border bg-surface flex items-center justify-between z-20 sticky top-0">
-        <div
-          className="flex items-center gap-[10px]"
-          onClick={() => navigate("/dashboard")}
-        >
-          <div className="w-[34px] h-[34px] rounded-full relative shrink-0 overflow-hidden bg-route/10 flex items-center justify-center">
-            <span className="font-['Fraunces'] font-bold text-route text-[18px]">
-              G
-            </span>
-          </div>
-          <div className="font-['Fraunces'] font-semibold text-[21px] tracking-[0.2px] text-ink">
-            GlobeTrotter<span className="text-route">.</span>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-[220px] p-[24px] lg:p-[48px] max-w-[1400px]">
+      <main className="flex-1 p-[24px] lg:p-[48px] max-w-[1400px]">
         {loading ? (
           <div className="flex justify-center items-center h-[300px] text-muted font-['IBM_Plex_Mono']">
             Loading your travels...

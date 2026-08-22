@@ -119,7 +119,7 @@ function ActivityDetailModal({ activity, onClose, onSave }) {
   );
 }
 
-function AddActivityModal({ stop, dayDateStr, onClose, onAdd }) {
+function AddActivityModal({ stop, onClose, onAdd }) {
   const [availableActivities, setAvailableActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -177,17 +177,10 @@ function AddActivityModal({ stop, dayDateStr, onClose, onAdd }) {
                 >
                   <div className="w-[48px] h-[48px] bg-surface rounded-[8px] overflow-hidden flex items-center justify-center border border-border shrink-0">
                     {act.image_url ? (
-                      <img
-                        src={act.image_url}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={act.image_url} alt={act.name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-[20px]">
-                        {act.category === "food"
-                          ? "🍔"
-                          : act.category === "sightseeing"
-                          ? "📸"
-                          : "📍"}
+                        {act.category === "food" ? "🍔" : act.category === "sightseeing" ? "📸" : "📍"}
                       </span>
                     )}
                   </div>
@@ -380,41 +373,7 @@ export default function ItineraryView() {
         setShowFilter(false);
       }}
     >
-      {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-[220px] fixed inset-y-0 left-0 border-r border-border bg-bg p-[24px] z-20">
-        <div className="flex items-center gap-[10px] mb-[40px]">
-          <div className="w-[34px] h-[34px] rounded-full relative shrink-0 overflow-hidden bg-route/10 flex items-center justify-center">
-            <span className="font-['Fraunces'] font-bold text-route text-[18px]">
-              G
-            </span>
-          </div>
-          <div className="font-['Fraunces'] font-semibold text-[20px] tracking-[0.2px] text-ink">
-            GlobalTrotter<span className="text-route">.</span>
-          </div>
-        </div>
-        <nav className="flex flex-col gap-[8px] mb-[40px]">
-          <Link
-            to="/trips"
-            className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors"
-          >
-            My Trips
-          </Link>
-          <a
-            href="#"
-            className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm"
-          >
-            Itinerary
-          </a>
-          <a
-            href="#"
-            className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors"
-          >
-            Explore
-          </a>
-        </nav>
-      </aside>
-
-      <main className="flex-1 lg:ml-[220px] flex flex-col min-h-screen pb-[100px]">
+      <main className="flex-1 flex flex-col min-h-screen pb-[100px]">
         {/* Top App Bar */}
         <div className="p-[18px] lg:p-[24px] border-b border-border bg-bg/80 backdrop-blur-sm z-10 sticky top-0 flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">

@@ -1,18 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
-import { useAuth } from '../hooks/useAuth';
-import { supabase } from '../lib/supabaseClient';
+
 
 export default function MyTrips() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { trips, loading, error, refetch, deleteTrip, completeTrip, optimisticComplete } = useTrips();
+
+
+  const { trips, loading, error, deleteTrip, completeTrip, optimisticComplete } = useTrips();
   
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [groupBy, setGroupBy] = useState('status'); // 'status', 'visibility'
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     underBudget: false,
     soloTrips: false,
     international: false,
@@ -78,42 +77,8 @@ export default function MyTrips() {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-bg relative">
       
-      {/* Desktop Sidebar (lg: >= 1024px) */}
-      <aside className="hidden lg:flex flex-col w-[220px] fixed inset-y-0 left-0 border-r border-border bg-bg p-[24px] z-20">
-        <div className="flex items-center gap-[10px] mb-[40px]">
-          <div className="w-[34px] h-[34px] rounded-full relative shrink-0 overflow-hidden bg-route/10 flex items-center justify-center">
-            <span className="font-['Fraunces'] font-bold text-route text-[18px]">G</span>
-          </div>
-          <div className="font-['Fraunces'] font-semibold text-[20px] tracking-[0.2px] text-ink">
-            GlobalTrotter<span className="text-route">.</span>
-          </div>
-        </div>
-        
-        <nav className="flex flex-col gap-[8px] mb-[40px]">
-          <a href="#" className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm">My Trips</a>
-          <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Explore</a>
-          <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Saved</a>
-          <Link to="/profile" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Profile</Link>
-        </nav>
-      </aside>
-
-      {/* Mobile Header (hidden on lg) */}
-      <div className="lg:hidden p-[18px] border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-[10px]">
-          <div className="w-[34px] h-[34px] rounded-full relative shrink-0 overflow-hidden bg-route/10 flex items-center justify-center">
-            <span className="font-['Fraunces'] font-bold text-route text-[18px]">G</span>
-          </div>
-          <div className="font-['Fraunces'] font-semibold text-[21px] tracking-[0.2px] text-ink">
-            GlobalTrotter<span className="text-route">.</span>
-          </div>
-        </div>
-        <button className="w-[38px] h-[38px] rounded-full border-[1.5px] border-border bg-surface flex items-center justify-center hover:border-horizon transition-all">
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" className="w-[16px] h-[16px] stroke-muted"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.6-4 4.3-6 7.5-6s5.9 2 7.5 6"/></svg>
-        </button>
-      </div>
-
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-[220px] flex flex-col min-h-screen">
+      <main className="flex-1 flex flex-col min-h-screen">
         
         {/* Top Bar (Sticky) */}
         <div className="p-[18px] lg:p-[24px] border-b border-border bg-bg/80 backdrop-blur-sm z-10 shrink-0">

@@ -10,7 +10,9 @@ import ItineraryView from "./pages/ItineraryView";
 import BudgetView from "./pages/BudgetView";
 import PublicTrip from "./pages/PublicTrip";
 import Profile from "./pages/Profile";
+import Community from "./pages/Community";
 import TripCalendar from "./pages/TripCalendar";
+import AppShell from "./components/AppShell";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -27,6 +29,8 @@ function PublicOnly({ children }) {
 }
 
 export default function App() {
+  const appShell = (element) => <AppShell>{element}</AppShell>;
+
   return (
     <BrowserRouter>
       <Routes>
@@ -46,22 +50,23 @@ export default function App() {
             </PublicOnly>
           }
         />
-        <Route path="/trip/public/:slug" element={<PublicTrip />} />
+        <Route path="/trip/public/:slug" element={appShell(<PublicTrip />)} />
 
         <Route
           path="/dashboard"
           element={
             <Protected>
-              <Dashboard />
+              {appShell(<Dashboard />)}
             </Protected>
           }
         />
-        <Route path="/trips" element={<MyTrips />} />
+        <Route path="/trips" element={appShell(<MyTrips />)} />
+        <Route path="/community" element={appShell(<Community />)} />
         <Route
           path="/profile"
           element={
             <Protected>
-              <Profile />
+              {appShell(<Profile />)}
             </Protected>
           }
         />
@@ -69,7 +74,7 @@ export default function App() {
           path="/trips/new"
           element={
             <Protected>
-              <CreateTrip />
+              {appShell(<CreateTrip />)}
             </Protected>
           }
         />
@@ -77,7 +82,7 @@ export default function App() {
           path="/trips/:tripId/build"
           element={
             <Protected>
-              <ItineraryBuilder />
+              {appShell(<ItineraryBuilder />)}
             </Protected>
           }
         />
@@ -85,7 +90,7 @@ export default function App() {
           path="/trips/:tripId/view"
           element={
             <Protected>
-              <ItineraryView />
+              {appShell(<ItineraryView />)}
             </Protected>
           }
         />
@@ -93,7 +98,7 @@ export default function App() {
           path="/trips/:tripId/budget"
           element={
             <Protected>
-              <BudgetView />
+              {appShell(<BudgetView />)}
             </Protected>
           }
         />
@@ -101,7 +106,7 @@ export default function App() {
           path="/trips/:tripId/calendar"
           element={
             <Protected>
-              <TripCalendar />
+              {appShell(<TripCalendar />)}
             </Protected>
           }
         />
@@ -109,7 +114,7 @@ export default function App() {
           path="/calendar"
           element={
             <Protected>
-              <TripCalendar />
+              {appShell(<TripCalendar />)}
             </Protected>
           }
         />
