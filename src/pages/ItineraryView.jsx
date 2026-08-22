@@ -185,14 +185,17 @@ export default function ItineraryView() {
   const getDaysInStop = (stop) => {
     if (!trip) return [];
     const days = [];
-    const start = new Date(stop.start_date); start.setHours(0,0,0,0);
-    const end = new Date(stop.end_date); end.setHours(0,0,0,0);
-    const tripStart = new Date(trip.start_date); tripStart.setHours(0,0,0,0);
+    const start = new Date(stop.start_date + 'T00:00:00');
+    const end = new Date(stop.end_date + 'T00:00:00');
+    const tripStart = new Date(trip.start_date + 'T00:00:00');
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateObj = new Date(d);
-      const dateStr = dateObj.toISOString().split('T')[0];
-      const dayNumber = Math.max(1, Math.round((dateObj - tripStart) / (1000 * 60 * 60 * 24)) + 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const dayNum = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${dayNum}`;
+
+      const dayNumber = Math.max(1, Math.round((d - tripStart) / (1000 * 60 * 60 * 24)) + 1);
       days.push({ dateStr, dayNumber });
     }
     return days;
@@ -425,6 +428,12 @@ export default function ItineraryView() {
                               setEditingActivity={setEditingActivity}
                               onAddClick={(dateStr) => setAddingToDay({ stop, dayDateStr: dateStr })}
                               idleGapThresholdMinutes={45}
+                              isCompleted={(() => {
+                                if (!trip?.end_date) return false;
+                                const end = new Date(trip.end_date + 'T00:00:00');
+                                const today = new Date(new Date().toISOString().split('T')[0] + 'T00:00:00');
+                                return end < today;
+                              })()}
                             />
                           </div>
                         )}

@@ -37,14 +37,12 @@ export function useItinerary(tripId) {
       setTripStops(sortedStops);
 
       const flatActivities = [];
-      const startDate = new Date(data.start_date);
-      startDate.setHours(0, 0, 0, 0);
+      const startDate = new Date(data.start_date + 'T00:00:00');
 
       sortedStops.forEach(stop => {
         (stop.stop_activities || []).forEach(sa => {
           const act = sa.activity || {};
-          const scheduledDate = new Date(sa.scheduled_date);
-          scheduledDate.setHours(0, 0, 0, 0);
+          const scheduledDate = new Date(sa.scheduled_date + 'T00:00:00');
           
           const dayNumber = Math.max(1, Math.round((scheduledDate - startDate) / (1000 * 60 * 60 * 24)) + 1);
           

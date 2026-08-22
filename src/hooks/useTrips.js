@@ -9,6 +9,7 @@ export function useTrips() {
   const [error, setError] = useState(null);
 
   const fetchTrips = useCallback(async () => {
+    if (!user) return;
     try {
       setLoading(true);
       setError(null);

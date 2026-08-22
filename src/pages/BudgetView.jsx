@@ -145,7 +145,12 @@ export default function BudgetView() {
         ) : (
           <div className="max-w-[1000px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             {currentTab === 'Overview' && <BudgetOverviewTab expenses={expenses} />}
-            {currentTab === 'By Day' && <BudgetByDayTab expenses={expenses} onUpdateExpense={handleUpdateExpense} />}
+            {currentTab === 'By Day' && <BudgetByDayTab expenses={expenses} onUpdateExpense={handleUpdateExpense} isCompleted={(() => {
+              if (!trip?.end_date) return false;
+              const end = new Date(trip.end_date + 'T00:00:00');
+              const today = new Date(new Date().toISOString().split('T')[0] + 'T00:00:00');
+              return end < today;
+            })()} />}
             {currentTab === 'By Category' && <BudgetByCategoryTab expenses={expenses} totalCost={totalCost} />}
           </div>
         )}
