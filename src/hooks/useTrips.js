@@ -37,7 +37,8 @@ export function useTrips() {
             city:cities (
               id,
               name,
-              country
+              country,
+              image_url
             ),
             stop_activities (
               id,
@@ -144,8 +145,14 @@ export function useTrips() {
             progressPercent = 5;
           }
 
+          let coverImageUrl = trip.cover_photo_url;
+          if (!coverImageUrl && sortedStops.length > 0 && sortedStops[0].city?.image_url) {
+            coverImageUrl = sortedStops[0].city.image_url;
+          }
+
           return {
             ...trip,
+            cover_photo_url: coverImageUrl,
             computedStatus: status,
             routeString,
             totalCost,

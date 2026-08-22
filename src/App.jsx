@@ -10,6 +10,7 @@ import ItineraryView from "./pages/ItineraryView";
 import BudgetView from "./pages/BudgetView";
 import PublicTrip from "./pages/PublicTrip";
 import Profile from "./pages/Profile";
+import Community from "./pages/Community";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -37,6 +38,10 @@ export default function App() {
         <Route
           path="/trips"
           element={<MyTrips />}
+        />
+        <Route
+          path="/community"
+          element={<Community />}
         />
         <Route
           path="/profile"

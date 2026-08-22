@@ -91,7 +91,7 @@ export default function MyTrips() {
         
         <nav className="flex flex-col gap-[8px] mb-[40px]">
           <a href="#" className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm">My Trips</a>
-          <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Explore</a>
+          <Link to="/community" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Community</Link>
           <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Saved</a>
           <Link to="/profile" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Profile</Link>
         </nav>

@@ -274,7 +274,7 @@ export default function ItineraryView() {
         <nav className="flex flex-col gap-[8px] mb-[40px]">
           <Link to="/trips" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">My Trips</Link>
           <a href="#" className="font-['Inter'] font-medium text-ink bg-surface border border-border rounded-[8px] px-[16px] py-[10px] shadow-sm">Itinerary</a>
-          <a href="#" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Explore</a>
+          <Link to="/community" className="font-['Inter'] font-medium text-muted hover:text-ink hover:bg-surface/50 rounded-[8px] px-[16px] py-[10px] transition-colors">Community</Link>
         </nav>
       </aside>
 
