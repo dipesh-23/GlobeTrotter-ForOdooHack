@@ -35,11 +35,7 @@ export default function App() {
         />
         <Route
           path="/trips"
-          element={
-            <Protected>
-              <MyTrips />
-            </Protected>
-          }
+          element={<MyTrips />}
         />
         <Route
           path="/trips/new"
