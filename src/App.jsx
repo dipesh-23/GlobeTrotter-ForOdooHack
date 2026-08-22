@@ -52,6 +52,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
+
         {/* Admin Route */}
         <Route
           path="/admin"
