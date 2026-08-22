@@ -36,8 +36,12 @@ export default function ItineraryTimelineView({
   setEditingActivity,
   onAddClick,
   idleGapThresholdMinutes = 45,
+  isCompleted = false
 }) {
   if (dayActivities.length === 0) {
+    if (isCompleted) {
+      return <div className="text-center py-[24px] text-muted text-[14px]">No activities were planned for this day.</div>;
+    }
     return (
       <div
         onClick={() => onAddClick(dayDateStr)}
@@ -79,7 +83,9 @@ export default function ItineraryTimelineView({
   return (
     <div className="flex flex-col relative pt-[8px]">
       {/* Initial Drop Zone */}
-      {draggedAct && <DropZone onDrop={(e) => handleDrop(e, 0, dayDateStr)} />}
+      {draggedAct && !isCompleted && (
+        <DropZone onDrop={(e) => handleDrop(e, 0, dayDateStr)} />
+      )}
 
       {dayActivities.map((act, actIdx) => {
         const catStyle = getCategoryStyles(act.category);
@@ -126,30 +132,23 @@ export default function ItineraryTimelineView({
               </div>
 
               {/* Cards Wrapper */}
-              <div
-                className="flex-1 flex gap-[12px] md:gap-[16px] pb-[16px] relative pl-[24px] -ml-[24px]"
-                draggable
-                onDragStart={(e) => handleDragStart(e, act)}
-                onDragEnd={handleDragEnd}
+              <div 
+                className={`flex-1 flex gap-[12px] md:gap-[16px] pb-[16px] relative pl-[24px] -ml-[24px] ${isCompleted ? '' : ''}`}
+                draggable={!isCompleted}
+                onDragStart={(e) => !isCompleted && handleDragStart(e, act)}
+                onDragEnd={!isCompleted ? handleDragEnd : undefined}
               >
                 {/* Drag Handle (Hover) */}
-                <div className="absolute left-[8px] top-[32px] opacity-0 group-hover/row:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-muted hover:text-ink z-20">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    className="w-[16px] h-[16px]"
-                  >
-                    <path d="M8 6h.01M16 6h.01M8 12h.01M16 12h.01M8 18h.01M16 18h.01" />
-                  </svg>
-                </div>
+                {!isCompleted && (
+                  <div className="absolute left-[8px] top-[32px] opacity-0 group-hover/row:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-muted hover:text-ink z-20">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-[16px] h-[16px]"><path d="M8 6h.01M16 6h.01M8 12h.01M16 12h.01M8 18h.01M16 18h.01"/></svg>
+                  </div>
+                )}
 
                 {/* Activity Card */}
-                <div
-                  onClick={() => setEditingActivity(act)}
-                  className="flex-1 bg-surface border border-border rounded-[12px] p-[16px] cursor-pointer hover:border-route transition-colors shadow-sm flex flex-col md:flex-row md:items-center gap-[12px]"
+                <div 
+                  onClick={() => !isCompleted && setEditingActivity(act)}
+                  className={`flex-1 bg-surface border border-border rounded-[12px] p-[16px] shadow-sm flex flex-col md:flex-row md:items-center gap-[12px] ${isCompleted ? 'cursor-default opacity-80' : 'cursor-pointer hover:border-route transition-colors'}`}
                 >
                   <div className="w-[48px] h-[48px] rounded-[8px] bg-bg flex items-center justify-center border border-border shrink-0 overflow-hidden">
                     {act.image_url ? (
@@ -193,9 +192,9 @@ export default function ItineraryTimelineView({
                 </div>
 
                 {/* Expense Card */}
-                <div
-                  onClick={() => setEditingActivity(act)}
-                  className="w-[100px] md:w-[140px] shrink-0 bg-surface border border-border rounded-[12px] p-[16px] cursor-pointer hover:border-horizon transition-colors shadow-sm flex flex-col items-end justify-center pointer-events-none"
+                <div 
+                  onClick={() => !isCompleted && setEditingActivity(act)}
+                  className={`w-[100px] md:w-[140px] shrink-0 bg-surface border border-border rounded-[12px] p-[16px] shadow-sm flex flex-col items-end justify-center pointer-events-none ${isCompleted ? 'opacity-80' : 'cursor-pointer hover:border-horizon transition-colors'}`}
                 >
                   <span className="text-[11px] text-muted font-medium uppercase tracking-[0.5px] mb-[2px]">
                     Cost
@@ -208,10 +207,8 @@ export default function ItineraryTimelineView({
             </div>
 
             {/* Drop Zone after this item */}
-            {draggedAct && (
-              <DropZone
-                onDrop={(e) => handleDrop(e, act.order_index + 1, dayDateStr)}
-              />
+            {draggedAct && !isCompleted && (
+              <DropZone onDrop={(e) => handleDrop(e, act.order_index + 1, dayDateStr)} />
             )}
 
             {/* Conflict Warning Box (if overlap) */}
@@ -237,12 +234,14 @@ export default function ItineraryTimelineView({
         );
       })}
 
-      <button
-        onClick={() => onAddClick(dayDateStr)}
-        className="ml-[60px] mt-[8px] py-[16px] px-[16px] rounded-[12px] border border-dashed border-border text-[14px] font-medium text-muted hover:border-route hover:text-route transition-colors text-center cursor-pointer w-[calc(100%-60px)]"
-      >
-        + Add Activity
-      </button>
+      {!isCompleted && (
+        <button 
+          onClick={() => onAddClick(dayDateStr)}
+          className="ml-[60px] mt-[8px] py-[16px] px-[16px] rounded-[12px] border border-dashed border-border text-[14px] font-medium text-muted hover:border-route hover:text-route transition-colors text-center cursor-pointer w-[calc(100%-60px)]"
+        >
+          + Add Activity
+        </button>
+      )}
     </div>
   );
 }

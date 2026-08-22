@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { getCategoryStyles } from '../../utils/categoryColors';
 
-function CostEditor({ expense, onUpdate }) {
+function CostEditor({ expense, onUpdate, isCompleted }) {
   const [isEditing, setIsEditing] = useState(false);
   const [val, setVal] = useState(expense.cost || 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,22 +38,22 @@ function CostEditor({ expense, onUpdate }) {
   return (
     <button 
       onClick={() => setIsEditing(true)}
-      disabled={isSubmitting || isSynthetic} // Disable editing for stay/transport for simplicity unless wired up
+      disabled={isSubmitting || isSynthetic || isCompleted} // Disable editing for stay/transport or if trip is completed
       className={`group flex items-center gap-[4px] px-[8px] py-[4px] rounded-[4px] transition-colors ${
-        isSynthetic ? 'cursor-default' : 'cursor-pointer hover:bg-bg'
+        (isSynthetic || isCompleted) ? 'cursor-default' : 'cursor-pointer hover:bg-bg'
       }`}
     >
       <span className="text-[14px] font-['IBM_Plex_Mono'] font-medium text-ink group-hover:text-horizon transition-colors">
         {expense.isEstimated ? `~₹${expense.cost}` : `₹${expense.cost}`}
       </span>
-      {!isSynthetic && (
+      {!(isSynthetic || isCompleted) && (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-[12px] h-[12px] text-muted opacity-0 group-hover:opacity-100"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       )}
     </button>
   );
 }
 
-export default function BudgetByDayTab({ expenses, onUpdateExpense }) {
+export default function BudgetByDayTab({ expenses, onUpdateExpense, isCompleted }) {
   // Group by day
   const daysMap = {};
   expenses.forEach(exp => {
@@ -104,7 +104,7 @@ export default function BudgetByDayTab({ expenses, onUpdateExpense }) {
                           )}
                         </div>
                         
-                        <CostEditor expense={exp} onUpdate={onUpdateExpense} />
+                        <CostEditor expense={exp} onUpdate={onUpdateExpense} isCompleted={isCompleted} />
                       </div>
                     );
                   })}
