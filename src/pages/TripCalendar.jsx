@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../hooks/useAuth";
+import CalendarTour from "../components/CalendarTour";
 
 /* ─── Design-system colour palette for trips (mirrors CSS tokens) ───────────── */
 const TRIP_COLORS = [
@@ -66,6 +67,24 @@ export default function TripCalendar() {
 
   const [edits,     setEdits]     = useState({});
   const [editingId, setEditingId] = useState(null);
+
+  // Guided tour overlay state
+  const [isTourOpen, setIsTourOpen] = useState(false);
+
+  // Auto-trigger tour on first visit once loading completes
+  useEffect(() => {
+    if (!loading) {
+      try {
+        const hasSeen = localStorage.getItem("hasSeenCalendarTour");
+        if (!hasSeen) {
+          const timer = setTimeout(() => setIsTourOpen(true), 450);
+          return () => clearTimeout(timer);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, [loading]);
 
   /* ── fetch (unchanged) ─────────────────────────────────────────────────── */
   const fetchData = useCallback(async () => {
@@ -304,6 +323,17 @@ export default function TripCalendar() {
           >
             Today
           </button>
+
+          {/* Replay tutorial button */}
+          <button
+            id="replay-tour-btn"
+            onClick={() => setIsTourOpen(true)}
+            title="Replay Calendar Tutorial"
+            className="flex items-center gap-1.5 bg-bg border border-border text-ink hover:border-route hover:text-route font-body text-small font-medium rounded-sm px-3 py-2 transition-colors cursor-pointer"
+          >
+            <span className="text-route text-xs">✨</span>
+            <span className="hidden sm:inline">Tutorial</span>
+          </button>
         </div>
       </nav>
 
@@ -327,7 +357,7 @@ export default function TripCalendar() {
             <div className={`grid gap-6 items-start transition-all duration-200 ${selectedDate ? "grid-cols-[1fr_380px]" : "grid-cols-1"}`}>
 
               {/* Calendar card */}
-              <div className="bg-surface rounded-md shadow-card overflow-hidden">
+              <div id="tour-calendar-card" className="bg-surface rounded-md shadow-card overflow-hidden">
                 {/* Month nav */}
                 <div className="flex items-center justify-between px-6 pt-6 pb-4">
                   <button
@@ -387,7 +417,7 @@ export default function TripCalendar() {
                 </div>
 
                 {/* Trip chip row */}
-                <div className="border-t border-border px-4 py-3 flex flex-wrap gap-2">
+                <div id="tour-trip-chips" className="border-t border-border px-4 py-3 flex flex-wrap gap-2">
                   {trips.map((t) => {
                     const c    = TRIP_COLORS[t.colorIdx];
                     const isOn = !hiddenTripIds.has(t.id);
@@ -448,6 +478,12 @@ export default function TripCalendar() {
           </>
         )}
       </main>
+
+      {/* ── Guided Tutorial Overlay ── */}
+      <CalendarTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+      />
     </div>
   );
 }
@@ -731,7 +767,7 @@ function TimelineSection({ trips, stops, activities, tripColorMap, filterTripId,
   const visibleTrips = filterTripId === "all" ? trips : trips.filter((t) => t.id === filterTripId);
 
   return (
-    <div>
+    <div id="tour-timeline-section">
       <h2 className="font-display text-h2 font-semibold text-ink mb-5">Full Itinerary Timeline</h2>
 
       <div className="flex flex-col gap-6">
