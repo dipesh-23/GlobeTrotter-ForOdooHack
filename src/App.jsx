@@ -11,11 +11,24 @@ import BudgetView from "./pages/BudgetView";
 import PublicTrip from "./pages/PublicTrip";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-bg flex items-center justify-center font-['IBM_Plex_Mono'] text-muted">Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function AdminRoleGuard({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-bg flex items-center justify-center font-['IBM_Plex_Mono'] text-muted">Loading Admin...</div>;
+  
+  // Enforce standard admin credentials
+  if (!user || user.email !== 'admin@globetrotter.com') {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
   return children;
 }
 
@@ -26,6 +39,16 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/trip/public/:slug" element={<PublicTrip />} />
+
+        {/* Admin Route */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoleGuard>
+              <AdminDashboard />
+            </AdminRoleGuard>
+          }
+        />
 
         <Route
           path="/dashboard"
